@@ -50,6 +50,7 @@ import Tables from "./components/Tables";
 import Tabs from "./components/Tabs";
 import Tooltips from "./components/Tooltips";
 import Toasts from "./components/Toasts";
+import Profile from "./Profile";
 
 const RouteWithLoader = ({ component: Component, ...rest }) => {
   const [loaded, setLoaded] = useState(false);
@@ -114,6 +115,7 @@ export default () => (
 
       {/* pages - protected routes */}
       <ProtectedRoute exact path={Routes.DashboardOverview.path} component={DashboardOverview} />
+      <ProtectedRoute exact path={Routes.Profile.path} component={Profile} />
       <ProtectedRoute exact path={Routes.Upgrade.path} component={Upgrade} />
       <ProtectedRoute exact path={Routes.Transactions.path} component={Transactions} />
       <ProtectedRoute exact path={Routes.Settings.path} component={Settings} />

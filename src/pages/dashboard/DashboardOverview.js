@@ -16,9 +16,7 @@ export default () => {
       <div className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center py-4">
         <div className="d-flex align-items-center">
           <h4 className="mb-0 me-3">Welcome, {user?.first_name} {user?.last_name}!</h4>
-          <Button variant="outline-danger" size="sm" onClick={logout}>
-            <FontAwesomeIcon icon={faSignOutAlt} className="me-2" />Logout
-          </Button>
+        
         </div>
         <Dropdown className="btn-toolbar">
           <Dropdown.Toggle as={Button} variant="primary" size="sm" className="me-2">

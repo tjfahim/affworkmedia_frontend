@@ -30,6 +30,13 @@ api.interceptors.response.use(
     if (error.code === 'ERR_NETWORK') {
       console.error('Network error - please check if your backend server is running');
     }
+    // Handle 401 Unauthorized errors (token expired)
+    if (error.response && error.response.status === 401) {
+      // Clear local storage and redirect to login
+      localStorage.removeItem('access_token');
+      localStorage.removeItem('user');
+      window.location.href = '/';
+    }
     return Promise.reject(error);
   }
 );
@@ -56,4 +63,80 @@ export const authAPI = {
   register: (userData) => api.post('/register', userData),
 };
 
+// User Profile API methods
+export const userAPI = {
+  // Get user profile
+  getProfile: () => {
+    return api.get('/user/profile');
+  },
+  
+  // Update user profile
+  updateProfile: (userData) => {
+    return api.put('/user/profile', userData);
+  },
+  
+  // Change password
+  changePassword: (passwordData) => {
+    return api.post('/user/change-password', passwordData);
+  },
+  
+  // Upload avatar (if you want to add avatar functionality later)
+  uploadAvatar: (formData) => {
+    return api.post('/user/avatar', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+  },
+  
+  // Get user statistics (for dashboard)
+  getUserStats: () => {
+    return api.get('/user/stats');
+  },
+  
+  // Update notification settings
+  updateNotificationSettings: (settings) => {
+    return api.put('/user/notifications', settings);
+  },
+  
+  // Get user activity log
+  getActivityLog: (params) => {
+    return api.get('/user/activity', { params });
+  },
+};
+
+// Admin only methods (if needed)
+export const adminAPI = {
+  // Get all users
+  getUsers: (params) => {
+    return api.get('/admin/users', { params });
+  },
+  
+  // Get user by ID
+  getUserById: (id) => {
+    return api.get(`/admin/users/${id}`);
+  },
+  
+  // Update user by ID
+  updateUser: (id, userData) => {
+    return api.put(`/admin/users/${id}`, userData);
+  },
+  
+  // Delete user
+  deleteUser: (id) => {
+    return api.delete(`/admin/users/${id}`);
+  },
+  
+  // Get user roles
+  getRoles: () => {
+    return api.get('/admin/roles');
+  },
+  
+  // Assign role to user
+  assignRole: (userId, roleId) => {
+    return api.post(`/admin/users/${userId}/assign-role`, { role_id: roleId });
+  },
+};
+
+// Export the api instance as default
 export default api;
