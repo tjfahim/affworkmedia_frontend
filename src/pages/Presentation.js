@@ -1,23 +1,27 @@
 import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faExternalLinkAlt, faUsers, faChartLine, faBullseye, faGlobe, faHandshake, faUserPlus, faSignInAlt, faEnvelope, faLock, faUser } from "@fortawesome/free-solid-svg-icons";
-import { faBootstrap, faReact, faSass } from "@fortawesome/free-brands-svg-icons";
-import { Col, Row, Card, Image, Button, Container, Tooltip, OverlayTrigger, Form, Navbar, Nav, Modal, Tab, Tabs } from '@themesberg/react-bootstrap';
-import { Link } from 'react-router-dom';
+import { faExternalLinkAlt, faUsers, faChartLine, faBullseye, faGlobe, faHandshake, faUserPlus, faSignInAlt } from "@fortawesome/free-solid-svg-icons";
+import { Col, Row, Card, Button, Container, Navbar, Nav } from '@themesberg/react-bootstrap';
 import { HashLink } from 'react-router-hash-link';
-import { Routes } from "../routes";
-import ThemesbergLogo from "../assets/img/themesberg-logo.svg";
-import ReactHero from "../assets/img/technologies/react-hero-logo.svg";
+import { AuthModal } from "./presentation_files/AuthModal";
+import { useAuth } from "../context/AuthContext";
 
-export default () => {
+const Presentation = () => {
   const [showAuthModal, setShowAuthModal] = useState(false);
-  const [authTab, setAuthTab] = useState("signin");
-
-  const handleShowAuth = (tab) => {
-    setAuthTab(tab);
+  const [initialAuthTab, setInitialAuthTab] = useState("signin");
+  const { isAuthenticated } = useAuth();
+  
+  const handleShowSignIn = () => {
+    setInitialAuthTab("signin");
     setShowAuthModal(true);
   };
 
+  const handleShowSignUp = () => {
+    setInitialAuthTab("signup");
+    setShowAuthModal(true);
+  };
+
+  // Stat Card Component
   const StatCard = (props) => {
     const { value, label, icon } = props;
 
@@ -36,6 +40,7 @@ export default () => {
     );
   };
 
+  // Feature Card Component
   const FeatureCard = (props) => {
     const { title, description, icon } = props;
 
@@ -54,125 +59,14 @@ export default () => {
     );
   };
 
-  // Authentication Modal Component
-  const AuthModal = () => (
-    <Modal show={showAuthModal} onHide={() => setShowAuthModal(false)} centered size="md">
-      <Modal.Header closeButton className="border-0 pb-0">
-        <Modal.Title className="h5">
-          {authTab === "signin" ? "Welcome Back!" : "Create Account"}
-        </Modal.Title>
-      </Modal.Header>
-      <Modal.Body className="px-4 pb-4">
-        <Tabs activeKey={authTab} onSelect={(k) => setAuthTab(k)} className="mb-4 nav-justified">
-          <Tab eventKey="signin" title="Sign In" tabClassName="fw-bold">
-            <Form className="mt-3">
-              <Form.Group className="mb-3" controlId="formBasicEmail">
-                <Form.Label className="text-small">Email address</Form.Label>
-                <div className="input-group">
-                  <span className="input-group-text bg-light">
-                    <FontAwesomeIcon icon={faEnvelope} className="text-gray" />
-                  </span>
-                  <Form.Control type="email" placeholder="Enter email" />
-                </div>
-              </Form.Group>
-
-              <Form.Group className="mb-3" controlId="formBasicPassword">
-                <Form.Label className="text-small">Password</Form.Label>
-                <div className="input-group">
-                  <span className="input-group-text bg-light">
-                    <FontAwesomeIcon icon={faLock} className="text-gray" />
-                  </span>
-                  <Form.Control type="password" placeholder="Password" />
-                </div>
-              </Form.Group>
-
-              <div className="d-flex justify-content-between align-items-center mb-4">
-                <Form.Check type="checkbox" label="Remember me" />
-                <Card.Link href="#" className="text-primary small">Forgot password?</Card.Link>
-              </div>
-
-              <Button variant="primary" className="w-100" as={Link} to={Routes.Signin.path}>
-                <FontAwesomeIcon icon={faSignInAlt} className="me-2" /> Sign In
-              </Button>
-
-              <p className="text-center mt-3 mb-0 text-gray small">
-                Don't have an account?{' '}
-                <Card.Link href="#" onClick={() => setAuthTab("signup")} className="text-primary">
-                  Sign Up
-                </Card.Link>
-              </p>
-            </Form>
-          </Tab>
-          
-          <Tab eventKey="signup" title="Sign Up" tabClassName="fw-bold">
-            <Form className="mt-3">
-              <Form.Group className="mb-3" controlId="formBasicName">
-                <Form.Label className="text-small">Full Name</Form.Label>
-                <div className="input-group">
-                  <span className="input-group-text bg-light">
-                    <FontAwesomeIcon icon={faUser} className="text-gray" />
-                  </span>
-                  <Form.Control type="text" placeholder="Enter full name" />
-                </div>
-              </Form.Group>
-
-              <Form.Group className="mb-3" controlId="formBasicEmail2">
-                <Form.Label className="text-small">Email address</Form.Label>
-                <div className="input-group">
-                  <span className="input-group-text bg-light">
-                    <FontAwesomeIcon icon={faEnvelope} className="text-gray" />
-                  </span>
-                  <Form.Control type="email" placeholder="Enter email" />
-                </div>
-              </Form.Group>
-
-              <Form.Group className="mb-3" controlId="formBasicPassword2">
-                <Form.Label className="text-small">Password</Form.Label>
-                <div className="input-group">
-                  <span className="input-group-text bg-light">
-                    <FontAwesomeIcon icon={faLock} className="text-gray" />
-                  </span>
-                  <Form.Control type="password" placeholder="Create password" />
-                </div>
-              </Form.Group>
-
-              <Form.Group className="mb-4" controlId="formBasicConfirmPassword">
-                <Form.Label className="text-small">Confirm Password</Form.Label>
-                <div className="input-group">
-                  <span className="input-group-text bg-light">
-                    <FontAwesomeIcon icon={faLock} className="text-gray" />
-                  </span>
-                  <Form.Control type="password" placeholder="Confirm password" />
-                </div>
-              </Form.Group>
-
-              <Form.Check 
-                type="checkbox" 
-                label="I agree to the Terms and Conditions" 
-                className="mb-4"
-              />
-
-              <Button variant="primary" className="w-100" as={Link} to={Routes.Signup.path}>
-                <FontAwesomeIcon icon={faUserPlus} className="me-2" /> Sign Up
-              </Button>
-
-              <p className="text-center mt-3 mb-0 text-gray small">
-                Already have an account?{' '}
-                <Card.Link href="#" onClick={() => setAuthTab("signin")} className="text-primary">
-                  Sign In
-                </Card.Link>
-              </p>
-            </Form>
-          </Tab>
-        </Tabs>
-      </Modal.Body>
-    </Modal>
-  );
-
   return (
     <>
       {/* Auth Modal */}
-      <AuthModal />
+      <AuthModal 
+        show={showAuthModal} 
+        onHide={() => setShowAuthModal(false)}
+        initialTab={initialAuthTab}
+      />
 
       {/* Navigation */}
       <Navbar variant="dark" expand="lg" bg="dark" className="navbar-transparent navbar-theme-primary sticky-top">
@@ -189,24 +83,38 @@ export default () => {
                 <Nav.Link as={HashLink} to="#global">Global</Nav.Link>
               </Nav>
             </Navbar.Collapse>
-            <Button 
-              variant="outline-white" 
-              className="ms-2"
-              onClick={() => handleShowAuth("signin")}
-            >
-              <FontAwesomeIcon icon={faSignInAlt} className="me-1" /> Sign In
-            </Button>
-            <Button 
-              variant="secondary" 
-              className="ms-2 text-dark"
-              onClick={() => handleShowAuth("signup")}
-            >
-              <FontAwesomeIcon icon={faUserPlus} className="me-1" /> Sign Up
-            </Button>
+            
+            {!isAuthenticated ? (
+              <>
+                <Button 
+                  variant="outline-white" 
+                  className="ms-2"
+                  onClick={handleShowSignIn}
+                >
+                  <FontAwesomeIcon icon={faSignInAlt} className="me-1" /> Sign In
+                </Button>
+                <Button 
+                  variant="secondary" 
+                  className="ms-2 text-dark"
+                  onClick={handleShowSignUp}
+                >
+                  <FontAwesomeIcon icon={faUserPlus} className="me-1" /> Sign Up
+                </Button>
+              </>
+            ) : (
+              <Button 
+                variant="secondary" 
+                className="ms-2 text-dark"
+                onClick={() => window.location.href = '#/dashboard/overview'}
+              >
+                Go to Dashboard
+              </Button>
+            )}
           </div>
         </Container>
       </Navbar>
 
+      {/* Rest of your Presentation component remains exactly the same */}
       {/* Hero Section */}
       <section className="section-header overflow-hidden pt-5 pt-lg-6 pb-9 pb-lg-12 bg-primary text-white" id="home">
         <Container>
@@ -222,7 +130,7 @@ export default () => {
                 <Button 
                   variant="secondary" 
                   className="text-dark me-3"
-                  onClick={() => handleShowAuth("signup")}
+                  onClick={handleShowSignUp} 
                 >
                   Get Started <FontAwesomeIcon icon={faExternalLinkAlt} className="d-none d-sm-inline ms-1" />
                 </Button>
@@ -283,7 +191,7 @@ export default () => {
               </p>
               <Button 
                 variant="primary" 
-                onClick={() => handleShowAuth("signup")}
+                onClick={handleShowSignUp} 
               >
                 Join Our Network <FontAwesomeIcon icon={faExternalLinkAlt} className="ms-1" />
               </Button>
@@ -348,7 +256,7 @@ export default () => {
             variant="secondary" 
             size="lg" 
             className="text-dark"
-            onClick={() => handleShowAuth("signup")}
+            onClick={handleShowSignUp} 
           >
             <FontAwesomeIcon icon={faUserPlus} className="me-2" /> Create Free Account
           </Button>
@@ -413,3 +321,5 @@ export default () => {
     </>
   );
 };
+
+export default Presentation;
