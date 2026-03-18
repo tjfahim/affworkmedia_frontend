@@ -7,7 +7,7 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import Preloader from "../components/Preloader";
 
-const ProtectedRoute = ({ component: Component, ...rest }) => {
+const ProtectedRoute = ({ component: Component,requiredPermission, requiredRole, ...rest }) => {
   const { isAuthenticated, loading } = useAuth();
 
   if (loading) {

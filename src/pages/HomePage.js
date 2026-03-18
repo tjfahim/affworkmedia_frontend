@@ -18,6 +18,8 @@ import ResetPassword from "./examples/ResetPassword";
 import Lock from "./examples/Lock";
 import NotFoundPage from "./examples/NotFound";
 import ServerError from "./examples/ServerError";
+import UserManagement from './admin/UserManagement';
+import RoleManagement from './admin/RoleManagement';
 
 // documentation pages
 import DocsOverview from "./documentation/DocsOverview";
@@ -120,6 +122,8 @@ export default () => (
       <ProtectedRoute exact path={Routes.Transactions.path} component={Transactions} />
       <ProtectedRoute exact path={Routes.Settings.path} component={Settings} />
       <ProtectedRoute exact path={Routes.BootstrapTables.path} component={BootstrapTables} />
+      <ProtectedRoute  exact path={Routes.Admin.Users.path} component={UserManagement}requiredPermission="view users"/>
+      <ProtectedRoute exact path={Routes.Admin.Roles.path} component={RoleManagement} requiredRole="super-admin"/>
 
       {/* components - protected routes */}
       <ProtectedRoute exact path={Routes.Accordions.path} component={Accordion} />

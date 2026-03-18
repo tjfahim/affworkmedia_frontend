@@ -18,6 +18,11 @@ export const Routes = {
     NotFound: { path: "/examples/404" },
     ServerError: { path: "/examples/500" },
 
+     Admin: {
+        Users: { path: "/admin/users" },
+        Roles: { path: "/admin/roles" },
+    },
+
     // docs
     DocsOverview: { path: "/documentation/overview" },
     DocsDownload: { path: "/documentation/download" },
@@ -45,5 +50,7 @@ export const Routes = {
     Tabs: { path: "/components/tabs" },
     Tooltips: { path: "/components/tooltips" },
     Toasts: { path: "/components/toasts" },
+    
     WidgetsComponent: { path: "/components/widgets" }
+    
 };
