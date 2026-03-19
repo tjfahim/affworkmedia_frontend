@@ -6,9 +6,9 @@ import { CSSTransition } from 'react-transition-group';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
   faChartPie, faCog, faHandHoldingUsd, faSignOutAlt, faTimes, 
-  faUsers, faUserCog, faKey, faUserTag
+  faUsers,faUserTie,faCalendarAlt, faUserCog, faUserTag
 } from "@fortawesome/free-solid-svg-icons";
-import { Nav, Badge, Image, Button, Dropdown, Accordion, Navbar } from '@themesberg/react-bootstrap';
+import { Nav, Badge, Image, Button, Navbar } from '@themesberg/react-bootstrap';
 import { Link } from 'react-router-dom';
 import { useAuth } from "../context/AuthContext";
 
@@ -48,28 +48,6 @@ export default (props = {}) => {
     );
   };
 
-  const CollapsableNavItem = (props) => {
-    const { eventKey, title, icon, children = null } = props;
-    const defaultKey = pathname.indexOf(eventKey) !== -1 ? eventKey : "";
-
-    return (
-      <Accordion as={Nav.Item} defaultActiveKey={defaultKey}>
-        <Accordion.Item eventKey={eventKey}>
-          <Accordion.Button as={Nav.Link} className="d-flex justify-content-between align-items-center">
-            <span>
-              <span className="sidebar-icon"><FontAwesomeIcon icon={icon} /> </span>
-              <span className="sidebar-text">{title}</span>
-            </span>
-          </Accordion.Button>
-          <Accordion.Body className="multi-level">
-            <Nav className="flex-column">
-              {children}
-            </Nav>
-          </Accordion.Body>
-        </Accordion.Item>
-      </Accordion>
-    );
-  };
 
   const handleLogout = async () => {
     await logout();
@@ -108,33 +86,32 @@ export default (props = {}) => {
             </div>
             
             <Nav className="flex-column pt-3 pt-md-0">
-              {/* Dashboard Link - Always visible */}
               <NavItem title="Dashboard" link={Routes.DashboardOverview.path} icon={faChartPie} />
               
-              {/* User Management Section - Only if user has permission */}
               {(hasPermission('view users')) && (
                 <>
                   <NavItem title="All Users" link="/admin/users" icon={faUserTag} />
                   
-                  {/* Role Management - Only for super-admin */}
                   {hasRole('super-admin') && (
                     <>
                       <NavItem title="Roles" link="/admin/roles" icon={faUserCog} />
+                      <NavItem title="Teams" link="/admin/teams" icon={faUsers} />
+                      <NavItem title="Games" link="/admin/games" icon={faUserTie} />
+                      <NavItem title="Events" link="/admin/events" icon={faCalendarAlt} />
+
+
                     </>
                   )}
                 </>
               )}
               
-              {/* Regular Menu Items */}
+              
               <NavItem title="Transactions" icon={faHandHoldingUsd} link={Routes.Transactions.path} />
               
-              {/* Settings - Only if user has permission */}
               {hasPermission('view settings') && (
                 <NavItem title="Settings" icon={faCog} link={Routes.Settings.path} />
               )}
               
-              {/* Optional divider - can be removed if not needed */}
-              {/* <Dropdown.Divider className="my-3 border-indigo" /> */}
             </Nav>
           </div>
         </SimpleBar>

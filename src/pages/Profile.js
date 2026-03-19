@@ -1,14 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { 
-  faUser, faEnvelope, faMapMarkerAlt, faMoneyBill, 
-  faCreditCard, faSkype, faBuilding, faGlobe, 
-  faFileAlt, faPaypal, faUniversity, faSave,
+  faUser, faSave,
   faEdit, faTimes, faKey
 } from "@fortawesome/free-solid-svg-icons";
 import { 
-  Row, Col, Card, Form, Button, Alert, 
-  Tab, Nav as BSNav, Badge, Spinner 
+  Row, Col, Card, Form, Button, Alert, Nav as BSNav, Badge, Spinner 
 } from '@themesberg/react-bootstrap';
 import { useAuth } from "../context/AuthContext";
 import { userAPI } from "../services/api";
@@ -16,7 +13,6 @@ import { userAPI } from "../services/api";
 export default function Profile() {
   const { user: authUser, updateUser } = useAuth();
   const [user, setUser] = useState(authUser);
-  const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
@@ -28,9 +24,6 @@ export default function Profile() {
     role.name === 'affiliate' || role.name === 'Affiliate'
   );
   
-  const isAdmin = user?.roles?.some(role => 
-    role.name === 'super-admin' || role.name === 'admin'
-  );
 
   // Form state
   const [formData, setFormData] = useState({

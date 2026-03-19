@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Button, Badge, Modal, Form, Alert, Spinner } from '@themesberg/react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faKey, faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
+import { faKey, faChevronUp } from '@fortawesome/free-solid-svg-icons';
 import { useAuth } from '../../context/AuthContext';
 import api from '../../services/api';
 

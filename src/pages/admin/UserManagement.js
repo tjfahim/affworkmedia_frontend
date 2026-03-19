@@ -239,7 +239,7 @@ const UserManagement = () => {
       email: user.email || '',
       password: '',
       password_confirmation: '',
-      role: user.roles && user.roles[0]?.name || '',
+      role: (user.roles && user.roles[0]?.name) || '',
       status: user.status || 'active'
     });
     setShowModal(true);
@@ -326,8 +326,6 @@ const UserManagement = () => {
           {filteredUsers && filteredUsers.length > 0 ? (
             filteredUsers.map(user => {
               const displayName = user.name || `${user.first_name || ''} ${user.last_name || ''}`.trim();
-              const userRole = user.roles && user.roles[0]?.name;
-              const roleColor = roleColors[userRole] || roleColors.default;
               const isSuperAdmin = user.roles?.some(r => r.name === 'super-admin');
               
               return (

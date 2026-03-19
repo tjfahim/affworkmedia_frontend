@@ -20,6 +20,11 @@ import NotFoundPage from "./examples/NotFound";
 import ServerError from "./examples/ServerError";
 import UserManagement from './admin/UserManagement';
 import RoleManagement from './admin/RoleManagement';
+import TeamManagement from './admin/TeamManagement';
+import GameManagement from './admin/GameManagement';
+import EventManagement from './admin/EventManagement';
+
+
 
 // documentation pages
 import DocsOverview from "./documentation/DocsOverview";
@@ -31,9 +36,6 @@ import DocsBuild from "./documentation/DocsBuild";
 import DocsChangelog from "./documentation/DocsChangelog";
 
 // components
-import Sidebar from "../components/Sidebar";
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
 import Preloader from "../components/Preloader";
 
 import Accordion from "./components/Accordion";
@@ -67,41 +69,6 @@ const RouteWithLoader = ({ component: Component, ...rest }) => {
   );
 };
 
-const RouteWithSidebar = ({ component: Component, ...rest }) => {
-  const [loaded, setLoaded] = useState(false);
-
-  useEffect(() => {
-    const timer = setTimeout(() => setLoaded(true), 1000);
-    return () => clearTimeout(timer);
-  }, []);
-
-  const localStorageIsSettingsVisible = () => {
-    return localStorage.getItem('settingsVisible') === 'false' ? false : true
-  }
-
-  const [showSettings, setShowSettings] = useState(localStorageIsSettingsVisible);
-
-  const toggleSettings = () => {
-    setShowSettings(!showSettings);
-    localStorage.setItem('settingsVisible', !showSettings);
-  }
-
-  return (
-    <Route {...rest} render={props => (
-      <>
-        <Preloader show={loaded ? false : true} />
-        <Sidebar />
-
-        <main className="content">
-          <Navbar />
-          <Component {...props} />
-          <Footer toggleSettings={toggleSettings} showSettings={showSettings} />
-        </main>
-      </>
-    )}
-    />
-  );
-};
 
 export default () => (
   <AuthProvider>
@@ -124,6 +91,10 @@ export default () => (
       <ProtectedRoute exact path={Routes.BootstrapTables.path} component={BootstrapTables} />
       <ProtectedRoute  exact path={Routes.Admin.Users.path} component={UserManagement}requiredPermission="view users"/>
       <ProtectedRoute exact path={Routes.Admin.Roles.path} component={RoleManagement} requiredRole="super-admin"/>
+      <ProtectedRoute exact path={Routes.Admin.Teams.path} component={TeamManagement} requiredRole="super-admin" />
+      <ProtectedRoute exact path={Routes.Admin.Games.path} component={GameManagement} requiredRole="super-admin" />
+      <ProtectedRoute exact path={Routes.Admin.Events.path} component={EventManagement} requiredRole="super-admin" />
+
 
       {/* components - protected routes */}
       <ProtectedRoute exact path={Routes.Accordions.path} component={Accordion} />

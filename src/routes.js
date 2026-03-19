@@ -21,6 +21,9 @@ export const Routes = {
      Admin: {
         Users: { path: "/admin/users" },
         Roles: { path: "/admin/roles" },
+        Teams: { path: "/admin/teams" },
+        Games: { path: "/admin/games" }, 
+        Events: { path: "/admin/events" }, 
     },
 
     // docs
