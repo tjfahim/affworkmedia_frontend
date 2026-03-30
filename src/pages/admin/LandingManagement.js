@@ -6,8 +6,7 @@ import {
 } from '@themesberg/react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
-  faEdit, faTrash, faPlus, faToggleOn, faToggleOff, 
-  faImage, faGamepad
+  faEdit, faTrash, faPlus, faToggleOn, faToggleOff, faGamepad
 } from '@fortawesome/free-solid-svg-icons';
 import landingAPI from '../../services/landingService';
 import gameAPI from '../../services/gameService';

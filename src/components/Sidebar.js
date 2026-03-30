@@ -102,20 +102,14 @@ export default (props = {}) => {
                       <NavItem title="Domain Redirects" link="/admin/domain-redirects" icon={faGlobe} />
                       <NavItem title="Affiliates" link="/admin/affiliates" icon={faUserPlus} />
 
+                      <NavItem title="Make Payment" link="/admin/make-payment" icon={faHandHoldingUsd} />
+                      <NavItem title="Payment History" link="/admin/payment-history" icon={faHandHoldingUsd} />
                       <NavItem title="Settings" link="/admin/settings" icon={faCog} />
 
                     </>
                   )}
                 </>
               )}
-              
-              
-              <NavItem title="Transactions" icon={faHandHoldingUsd} link={Routes.Transactions.path} />
-              
-              {hasPermission('view settings') && (
-                <NavItem title="Settings" icon={faCog} link={Routes.Settings.path} />
-              )}
-              
             </Nav>
           </div>
         </SimpleBar>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Route, Switch, Redirect } from "react-router-dom";
+import { Route, Switch, Redirect,useLocation, useHistory } from "react-router-dom";
 import { AuthProvider } from "../context/AuthContext";
 import ProtectedRoute from "../components/ProtectedRoute";
 import { Routes } from "../routes";
@@ -27,6 +27,8 @@ import LandingManagement from './admin/LandingManagement';
 import DomainRedirectManagement from './admin/DomainRedirectManagement';
 import SettingsManagement from './admin/SettingsManagement';
 import AffiliateManagement from './admin/AffiliateManagement';
+import MakePayment from './admin/MakePayment';
+import PaymentHistory from './admin/PaymentHistory';
 
 
 
@@ -74,8 +76,20 @@ const RouteWithLoader = ({ component: Component, ...rest }) => {
   );
 };
 
-
-export default () => (
+export default () => {
+  const location = useLocation();
+  const history = useHistory();
+  const token = localStorage.getItem('access_token');
+  const user = localStorage.getItem('user');
+  
+  useEffect(() => {
+    // If on root path and user is logged in, redirect to dashboard
+    if ((location.pathname === '/' || location.pathname === '') && token && user) {
+      history.replace('/dashboard/overview');
+    }
+  }, [location, history, token, user]);
+  
+  return (
   <AuthProvider>
     <Switch>
        <RouteWithLoader exact path={Routes.Presentation.path} component={Presentation} />
@@ -103,6 +117,8 @@ export default () => (
       <ProtectedRoute exact path={Routes.Admin.DomainRedirects.path} component={DomainRedirectManagement} requiredRole="super-admin" />
       <ProtectedRoute exact path={Routes.Admin.Settings.path} component={SettingsManagement} requiredRole="super-admin" />
       <ProtectedRoute exact path={Routes.Admin.Affiliates.path} component={AffiliateManagement} requiredRole="super-admin" />
+      <ProtectedRoute exact path={Routes.Admin.MakePayment.path} component={MakePayment} requiredRole="super-admin" />
+      <ProtectedRoute exact path={Routes.Admin.PaymentHistory.path} component={PaymentHistory} requiredRole="super-admin" />
 
 
 
@@ -136,4 +152,5 @@ export default () => (
       <Redirect to={Routes.NotFound.path} />
     </Switch>
   </AuthProvider>
-);
+
+)};

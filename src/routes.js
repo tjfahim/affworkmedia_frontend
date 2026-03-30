@@ -27,7 +27,9 @@ export const Routes = {
         Landings: { path: "/admin/landings" },
         DomainRedirects: { path: "/admin/domain-redirects" }, 
         Settings: { path: "/admin/settings" },
-        Affiliates: { path: "/admin/affiliates" }
+        Affiliates: { path: "/admin/affiliates" },
+        MakePayment: { path: "/admin/make-payment" },
+        PaymentHistory: { path: "/admin/payment-history" }
     },
 
     // docs
