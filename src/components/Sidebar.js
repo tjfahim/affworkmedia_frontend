@@ -6,7 +6,7 @@ import { CSSTransition } from 'react-transition-group';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
   faChartPie, faCog, faHandHoldingUsd, faSignOutAlt, faTimes, 
-  faUsers,faUserTie,faCalendarAlt, faUserCog,faLandmark,faGlobe, faUserTag
+  faUsers,faUserTie,faCalendarAlt, faUserCog,faLandmark,faGlobe, faUserTag, faUserPlus
 } from "@fortawesome/free-solid-svg-icons";
 import { Nav, Badge, Image, Button, Navbar } from '@themesberg/react-bootstrap';
 import { Link } from 'react-router-dom';
@@ -100,7 +100,9 @@ export default (props = {}) => {
                       <NavItem title="Events" link="/admin/events" icon={faCalendarAlt} />
                       <NavItem title="Landings" link="/admin/landings" icon={faLandmark} />
                       <NavItem title="Domain Redirects" link="/admin/domain-redirects" icon={faGlobe} />
+                      <NavItem title="Affiliates" link="/admin/affiliates" icon={faUserPlus} />
 
+                      <NavItem title="Settings" link="/admin/settings" icon={faCog} />
 
                     </>
                   )}

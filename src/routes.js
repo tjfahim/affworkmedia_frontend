@@ -26,6 +26,8 @@ export const Routes = {
         Events: { path: "/admin/events" }, 
         Landings: { path: "/admin/landings" },
         DomainRedirects: { path: "/admin/domain-redirects" }, 
+        Settings: { path: "/admin/settings" },
+        Affiliates: { path: "/admin/affiliates" }
     },
 
     // docs

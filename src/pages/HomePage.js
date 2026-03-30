@@ -25,6 +25,9 @@ import GameManagement from './admin/GameManagement';
 import EventManagement from './admin/EventManagement';
 import LandingManagement from './admin/LandingManagement';
 import DomainRedirectManagement from './admin/DomainRedirectManagement';
+import SettingsManagement from './admin/SettingsManagement';
+import AffiliateManagement from './admin/AffiliateManagement';
+
 
 
 
@@ -98,6 +101,9 @@ export default () => (
       <ProtectedRoute exact path={Routes.Admin.Events.path} component={EventManagement} requiredRole="super-admin" />
       <ProtectedRoute exact path={Routes.Admin.Landings.path} component={LandingManagement} requiredRole="super-admin" />
       <ProtectedRoute exact path={Routes.Admin.DomainRedirects.path} component={DomainRedirectManagement} requiredRole="super-admin" />
+      <ProtectedRoute exact path={Routes.Admin.Settings.path} component={SettingsManagement} requiredRole="super-admin" />
+      <ProtectedRoute exact path={Routes.Admin.Affiliates.path} component={AffiliateManagement} requiredRole="super-admin" />
+
 
 
       {/* components - protected routes */}
