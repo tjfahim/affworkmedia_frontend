@@ -11,10 +11,10 @@ export default () => (
           <Card.Body>
             <article>
               <h1 className="h2" id="download">Download </h1>
-              <p className="fs-5 fw-light">Download files for Volt React Dashboard</p>
-              <p>Use the following links to download Volt React Dashboard files:</p>
+              <p className="fs-5 fw-light">Download files for Affworkmedia Dashboard</p>
+              <p>Use the following links to download Affworkmedia Dashboard files:</p>
               <ul className="docs-list">
-                <li>Download <Card.Link href="https://themesberg.com/product/dashboard/volt-pro-react" target="_blank">Volt React Dashboard</Card.Link>.</li>
+                <li>Download <Card.Link href="https://themesberg.com/product/dashboard/volt-pro-react" target="_blank">Affworkmedia Dashboard</Card.Link>.</li>
               </ul>
             </article>
           </Card.Body>

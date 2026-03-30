@@ -12,7 +12,7 @@ export default () => (
           <Card.Body>
             <article>
               <h1 className="h2" id="build-tools">Build tools </h1>
-              <p className="fs-5 fw-light">Learn the commands that will help you work with Volt React Dashboard and the commands that can build the final production version of your app.</p>
+              <p className="fs-5 fw-light">Learn the commands that will help you work with Affworkmedia Dashboard and the commands that can build the final production version of your app.</p>
 
               <p className="fs-5 fw-bold">Available commands</p>
               <CommandsTable />

@@ -1,11 +1,11 @@
-# [Volt React Dashboard Bootstrap 5](https://demo.themesberg.com/volt-react-dashboard) [![Tweet](https://img.shields.io/twitter/url/http/shields.io.svg?style=social&logo=twitter)](https://twitter.com/intent/tweet?url=https%3A%2F%2Fgithub.com%2Fthemesberg%2Fvolt-react-dashboard&via=themesberg&text=Check%20out%20this%20open%20source%20React%20Dashboard)
+# [Affworkmedia Dashboard Bootstrap 5](https://demo.themesberg.com/volt-react-dashboard) [![Tweet](https://img.shields.io/twitter/url/http/shields.io.svg?style=social&logo=twitter)](https://twitter.com/intent/tweet?url=https%3A%2F%2Fgithub.com%2Fthemesberg%2Fvolt-react-dashboard&via=themesberg&text=Check%20out%20this%20open%20source%20React%20Dashboard)
 
 [![version](https://img.shields.io/npm/v/@themesberg/volt-react-dashboard)](https://www.npmjs.com/package/@themesberg/volt-react-dashboard)
 [![license](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE.md)
 [![GitHub issues open](https://img.shields.io/github/issues/themesberg/volt-react-dashboard.svg)](https://github.com/themesberg/volt-react-dashboard/issues?q=is%3Aopen+is%3Aissue)
 [![GitHub issues closed](https://img.shields.io/github/issues-closed-raw/themesberg/volt-react-dashboard.svg)](https://github.com/themesberg/volt-react-dashboard/issues?q=is%3Aissue+is%3Aclosed)
 
-[![Volt React Dashboard Bootstrap 5](https://themesberg.s3.us-east-2.amazonaws.com/public/products/volt-react-dashboard/thumbnail.png)](https://demo.themesberg.com/volt-react-dashboard)
+[![Affworkmedia Dashboard Bootstrap 5](https://themesberg.s3.us-east-2.amazonaws.com/public/products/volt-react-dashboard/thumbnail.png)](https://demo.themesberg.com/volt-react-dashboard)
 
 Volt React is a free and open source admin dashboard template built in React.js and based on the latest version of the Bootstrap 5 CSS framework. It features over 100 UI elements, plugins, and example based built with React components.
 
@@ -68,7 +68,7 @@ This product is built using the following widely used technologies:
 
 | HTML | React  |
 | --- | ---  |
-| [![Volt Bootstrap 5 Dashboard HTML](https://themesberg.s3.us-east-2.amazonaws.com/public/products/volt-bootstrap-5-dashboard/volt-bootstrap-5-dashboard-preview.jpg)](https://github.com/themesberg/volt-bootstrap-5-dashboard) | [![Volt React Dashboard](https://themesberg.s3.us-east-2.amazonaws.com/public/products/volt-react-dashboard/thumbnail.png)](https://demo.themesberg.com/volt-react-dashboard/)
+| [![Volt Bootstrap 5 Dashboard HTML](https://themesberg.s3.us-east-2.amazonaws.com/public/products/volt-bootstrap-5-dashboard/volt-bootstrap-5-dashboard-preview.jpg)](https://github.com/themesberg/volt-bootstrap-5-dashboard) | [![Affworkmedia Dashboard](https://themesberg.s3.us-east-2.amazonaws.com/public/products/volt-react-dashboard/thumbnail.png)](https://demo.themesberg.com/volt-react-dashboard/)
 
 ## Demo
 
@@ -148,7 +148,7 @@ Every component, plugin and getting started is thoroughly documented on our [onl
 Within the download you'll find the following directories and files:
 
 ```
-Volt React Dashboard
+Affworkmedia Dashboard
 .
 ├── LICENSE.md
 ├── README.md
@@ -236,9 +236,9 @@ If you'd like to support this open source software, we invite you to check out t
 
 ## Reporting Issues
 
-We use GitHub Issues as the official bug tracker for Volt React Dashboard. Here are some advices for our users that want to report an issue:
+We use GitHub Issues as the official bug tracker for Affworkmedia Dashboard. Here are some advices for our users that want to report an issue:
 
-1. Make sure that you are using the latest version of Volt React Dashboard. Check the CHANGELOG from your dashboard on our [website](https://themesberg.com/product/dashboard/volt-react#changelog).
+1. Make sure that you are using the latest version of Affworkmedia Dashboard. Check the CHANGELOG from your dashboard on our [website](https://themesberg.com/product/dashboard/volt-react#changelog).
 2. Providing us reproducible steps for the issue will shorten the time it takes for it to be fixed.
 3. Some issues may be browser specific, so specifying in what browser you encountered the issue might help.
 

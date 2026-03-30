@@ -24,6 +24,8 @@ export const Routes = {
         Teams: { path: "/admin/teams" },
         Games: { path: "/admin/games" }, 
         Events: { path: "/admin/events" }, 
+        Landings: { path: "/admin/landings" },
+        DomainRedirects: { path: "/admin/domain-redirects" }, 
     },
 
     // docs

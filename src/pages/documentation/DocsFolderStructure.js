@@ -11,7 +11,7 @@ export default () => (
           <Card.Body>
             <article>
               <h1 className="h2" id="file-structure">File structure </h1>
-              <p className="fs-5 fw-light">Learn more about the file structure for Volt React Dashboard</p>
+              <p className="fs-5 fw-light">Learn more about the file structure for Affworkmedia Dashboard</p>
 
               <p className="fs-5 fw-bold">Main folders and files</p>
               <p>At the top level of the project you'll find: </p>
@@ -39,9 +39,9 @@ export default () => (
                 <li><code>components/</code> - custom state or stateless <Card.Link href="https://reactjs.org/docs/components-and-props.html#function-and-class-components/" target="_blank">function components</Card.Link> built on top of <a href="https://react-bootstrap.github.io/" target="_blank" rel="noopener noreferrer">react-bootstrap library</a> and used throughout the application</li>
                 <li><code>data/</code> - files to feed the components that require an array of data (e.g tables, lists or calendar events). This data will in the end be fetched from a backend service.</li>
                 <li><code>pages/</code> - carefully built pages to provide all the necessary widgets your startup will require</li>
-                <li><code>scss/</code> - holds the variables, mixins and custom component styles developed by Themesberg for Volt React Dashboard</li>
+                <li><code>scss/</code> - holds the variables, mixins and custom component styles developed by Themesberg for Affworkmedia Dashboard</li>
                 <li><code>index.js</code> - is the JavaScript entry point</li>
-                <li><code>routes.js</code> - exports an object with all the route paths found in Volt React Dashboard</li>
+                <li><code>routes.js</code> - exports an object with all the route paths found in Affworkmedia Dashboard</li>
               </ul>
 
               <p className="fs-5 fw-bold">node_modules/ folder</p>

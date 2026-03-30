@@ -11,7 +11,7 @@ export default () => (
           <Card.Body>
             <article>
               <h1 className="h2" id="license">License</h1>
-              <p className="fs-5 fw-light">Licensing details for Volt React Dashboard</p>
+              <p className="fs-5 fw-light">Licensing details for Affworkmedia Dashboard</p>
               <p>Please check our <Card.Link href="https://themesberg.com/licensing">official licensing page</Card.Link> to learn more about our licensing.</p>
             </article>
           </Card.Body>

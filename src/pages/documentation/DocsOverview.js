@@ -11,9 +11,9 @@ export default () => (
           <Card.Body>
             <article>
               <h1 className="h2" id="overview">Overview </h1>
-              <p className="fs-5 fw-light">Download files for Volt React Dashboard</p>
+              <p className="fs-5 fw-light">Download files for Affworkmedia Dashboard</p>
 
-              <p>Volt React Dashboard is a React.js and Bootstrap 5 powered admin dashboard template featuring components, pages and plugins that you can use to create an awesome and interactive admin interface.</p>
+              <p>Affworkmedia Dashboard is a React.js and Bootstrap 5 powered admin dashboard template featuring components, pages and plugins that you can use to create an awesome and interactive admin interface.</p>
               <p>This product is built using the following widely used technologies:</p>
               <ul className="docs-list">
                 <li>Interactive UIs using <Card.Link href="https://reactjs.org/" target="_blank">React</Card.Link></li>

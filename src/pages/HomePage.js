@@ -23,6 +23,8 @@ import RoleManagement from './admin/RoleManagement';
 import TeamManagement from './admin/TeamManagement';
 import GameManagement from './admin/GameManagement';
 import EventManagement from './admin/EventManagement';
+import LandingManagement from './admin/LandingManagement';
+import DomainRedirectManagement from './admin/DomainRedirectManagement';
 
 
 
@@ -94,6 +96,8 @@ export default () => (
       <ProtectedRoute exact path={Routes.Admin.Teams.path} component={TeamManagement} requiredRole="super-admin" />
       <ProtectedRoute exact path={Routes.Admin.Games.path} component={GameManagement} requiredRole="super-admin" />
       <ProtectedRoute exact path={Routes.Admin.Events.path} component={EventManagement} requiredRole="super-admin" />
+      <ProtectedRoute exact path={Routes.Admin.Landings.path} component={LandingManagement} requiredRole="super-admin" />
+      <ProtectedRoute exact path={Routes.Admin.DomainRedirects.path} component={DomainRedirectManagement} requiredRole="super-admin" />
 
 
       {/* components - protected routes */}
