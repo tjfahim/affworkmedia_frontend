@@ -263,11 +263,21 @@ export const AuthProvider = ({ children }) => {
   const getAllPermissions = () => {
     return permissions;
   };
+const updateUser = (updatedUser) => {
+  setUser(updatedUser);
+  localStorage.setItem('user', JSON.stringify(updatedUser));
 
+  const userPermissions = extractPermissions(updatedUser);
+  const userRoles = extractRoles(updatedUser);
+
+  setPermissions(userPermissions);
+  setRoles(userRoles);
+};
   const value = {
     user,
     loading,
     error,
+    updateUser,
     login,
     register,
     logout,

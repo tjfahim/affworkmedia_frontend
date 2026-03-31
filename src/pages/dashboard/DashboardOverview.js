@@ -26,13 +26,7 @@ export default () => {
             <Dropdown.Item className="fw-bold">
               <FontAwesomeIcon icon={faTasks} className="me-2" /> New Task
             </Dropdown.Item>
-            <Dropdown.Item className="fw-bold">
-              <FontAwesomeIcon icon={faCloudUploadAlt} className="me-2" /> Upload Files
-            </Dropdown.Item>
-            <Dropdown.Item className="fw-bold">
-              <FontAwesomeIcon icon={faUserShield} className="me-2" /> Preview Security
-            </Dropdown.Item>
-
+          
             <Dropdown.Divider />
           </Dropdown.Menu>
         </Dropdown>
@@ -45,14 +39,6 @@ export default () => {
             <div className="card-body">
               <h6 className="text-white">Balance</h6>
               <h3>${user?.balance || '0.00'}</h3>
-            </div>
-          </div>
-        </Col>
-        <Col xs={12} md={4} className="mb-4">
-          <div className="card bg-success text-white">
-            <div className="card-body">
-              <h6 className="text-white">Affiliate Percent</h6>
-              <h3>{user?.aff_percent || '0'}%</h3>
             </div>
           </div>
         </Col>

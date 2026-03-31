@@ -1,17 +1,19 @@
-import axios from 'axios';
+import api from './api';
 
-const API_URL = 'http://127.0.0.1:8000/api';
+const TOKEN_KEY = 'access_token';
+const USER_KEY = 'user';
 
 const authService = {
     // Login
     login: async (credentials) => {
         try {
-            const response = await axios.post(`${API_URL}/login`, credentials);
+            const response = await api.post('/login', credentials);
+
             if (response.data.access_token) {
-                localStorage.setItem('user', JSON.stringify(response.data.user));
-                localStorage.setItem('token', response.data.access_token);
-                axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.access_token}`;
+                localStorage.setItem(TOKEN_KEY, response.data.access_token);
+                localStorage.setItem(USER_KEY, JSON.stringify(response.data.user));
             }
+
             return response.data;
         } catch (error) {
             throw error.response?.data || error.message;
@@ -21,12 +23,13 @@ const authService = {
     // Register
     register: async (userData) => {
         try {
-            const response = await axios.post(`${API_URL}/register`, userData);
+            const response = await api.post('/register', userData);
+
             if (response.data.access_token) {
-                localStorage.setItem('user', JSON.stringify(response.data.user));
-                localStorage.setItem('token', response.data.access_token);
-                axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.access_token}`;
+                localStorage.setItem(TOKEN_KEY, response.data.access_token);
+                localStorage.setItem(USER_KEY, JSON.stringify(response.data.user));
             }
+
             return response.data;
         } catch (error) {
             throw error.response?.data || error.message;
@@ -36,7 +39,7 @@ const authService = {
     // Forgot Password
     forgotPassword: async (email) => {
         try {
-            const response = await axios.post(`${API_URL}/forgot-password`, { email });
+            const response = await api.post('/forgot-password', { email });
             return response.data;
         } catch (error) {
             throw error.response?.data || error.message;
@@ -46,7 +49,7 @@ const authService = {
     // Reset Password
     resetPassword: async (data) => {
         try {
-            const response = await axios.post(`${API_URL}/reset-password`, data);
+            const response = await api.post('/reset-password', data);
             return response.data;
         } catch (error) {
             throw error.response?.data || error.message;
@@ -56,7 +59,11 @@ const authService = {
     // Verify Reset Token
     verifyResetToken: async (email, token) => {
         try {
-            const response = await axios.post(`${API_URL}/verify-reset-token`, { email, token });
+            const response = await api.post('/verify-reset-token', {
+                email,
+                token
+            });
+
             return response.data;
         } catch (error) {
             throw error.response?.data || error.message;
@@ -66,51 +73,35 @@ const authService = {
     // Logout
     logout: async () => {
         try {
-            const token = localStorage.getItem('token');
-            if (token) {
-                axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-                await axios.post(`${API_URL}/logout`);
-            }
+            await api.post('/logout');
         } catch (error) {
             console.error('Logout error:', error);
         } finally {
-            localStorage.removeItem('user');
-            localStorage.removeItem('token');
-            delete axios.defaults.headers.common['Authorization'];
+            localStorage.removeItem(TOKEN_KEY);
+            localStorage.removeItem(USER_KEY);
         }
     },
 
     // Get Current User
     getCurrentUser: () => {
-        const userStr = localStorage.getItem('user');
-        if (userStr) return JSON.parse(userStr);
-        return null;
+        const user = localStorage.getItem(USER_KEY);
+        return user ? JSON.parse(user) : null;
     },
 
-    // Get Auth Token
+    // Get Token
     getToken: () => {
-        return localStorage.getItem('token');
+        return localStorage.getItem(TOKEN_KEY);
     },
 
-    // Check if Authenticated
+    // Check Authentication
     isAuthenticated: () => {
-        const token = localStorage.getItem('token');
-        return !!token;
+        return !!localStorage.getItem(TOKEN_KEY);
+    },
+
+    // Save Updated User After Profile Update
+    updateStoredUser: (user) => {
+        localStorage.setItem(USER_KEY, JSON.stringify(user));
     }
 };
-
-// Set up axios interceptor for token
-axios.interceptors.request.use(
-    (config) => {
-        const token = localStorage.getItem('token');
-        if (token) {
-            config.headers.Authorization = `Bearer ${token}`;
-        }
-        return config;
-    },
-    (error) => {
-        return Promise.reject(error);
-    }
-);
 
 export default authService;

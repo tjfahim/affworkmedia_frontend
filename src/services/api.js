@@ -60,24 +60,17 @@ export const authAPI = {
 
 export const userAPI = {
   getProfile: () => {
-    return api.get('/user/profile');
+    return api.get('/profile');
   },
   
   updateProfile: (userData) => {
-    return api.put('/user/profile', userData);
+    return api.put('/profile', userData);
   },
   
   changePassword: (passwordData) => {
-    return api.post('/user/change-password', passwordData);
+    return api.put('/change-password', passwordData);
   },
   
-  uploadAvatar: (formData) => {
-    return api.post('/user/avatar', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
-  },
   
   getUserStats: () => {
     return api.get('/user/stats');

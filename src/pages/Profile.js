@@ -11,8 +11,8 @@ import { useAuth } from "../context/AuthContext";
 import { userAPI } from "../services/api";
 
 export default function Profile() {
-  const { user: authUser, updateUser } = useAuth();
-  const [user, setUser] = useState(authUser);
+  const { user, updateUser } = useAuth();
+  
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
@@ -89,8 +89,7 @@ export default function Profile() {
         setSuccess('Profile updated successfully!');
         setEditMode(false);
         // Update local user data
-        updateUser(response.data.user);
-        setUser(response.data.user);
+       updateUser(response.data.user);
       }
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to update profile');
@@ -181,13 +180,13 @@ export default function Profile() {
         <Col xs={12} xl={4} className="mb-4">
           <Card border="light" className="text-center p-0">
             <Card.Body className="pb-5">
-              <div className="user-avatar xl-avatar">
-                <FontAwesomeIcon icon={faUser} size="4x" className="text-gray" />
+              <div className="xl-avatar">
+                <FontAwesomeIcon icon={faUser} size="3x" className="text-gray" />
               </div>
               <div className="mt-3">
                 <h5>{user.first_name} {user.last_name}</h5>
                 <p className="text-gray mb-2">{user.email}</p>
-                <div className="mb-3">
+                <div className="p-3">
                   {getRoleBadge()}
                 </div>
                 <Badge bg={user.status === 'active' ? 'success' : 'secondary'} className="text-uppercase">
@@ -203,10 +202,6 @@ export default function Profile() {
               <div className="d-flex justify-content-between mb-2">
                 <span>Balance:</span>
                 <strong className="text-success">${user.balance || '0.00'}</strong>
-              </div>
-              <div className="d-flex justify-content-between mb-2">
-                <span>Affiliate Percent:</span>
-                <strong>{user.aff_percent || '0'}%</strong>
               </div>
               <div className="d-flex justify-content-between mb-2">
                 <span>Member Since:</span>
@@ -246,163 +241,159 @@ export default function Profile() {
                 </BSNav.Item>
               </BSNav>
 
-              {activeTab === 'profile' && (
-                <Form>
-                  <Row>
-                    <Col md={6} className="mb-3">
-                      <Form.Group>
-                        <Form.Label>First Name</Form.Label>
-                        <Form.Control
-                          type="text"
-                          name="first_name"
-                          value={formData.first_name}
-                          onChange={handleInputChange}
-                          disabled={!editMode}
-                        />
-                      </Form.Group>
-                    </Col>
-                    <Col md={6} className="mb-3">
-                      <Form.Group>
-                        <Form.Label>Last Name</Form.Label>
-                        <Form.Control
-                          type="text"
-                          name="last_name"
-                          value={formData.last_name}
-                          onChange={handleInputChange}
-                          disabled={!editMode}
-                        />
-                      </Form.Group>
-                    </Col>
-                  </Row>
+             {activeTab === 'profile' && (
+  <Form>
+    <Row>
+      <Col md={6} className="mb-3">
+        <Form.Group>
+          <Form.Label>First Name</Form.Label>
+          <Form.Control
+            type="text"
+            name="first_name"
+            value={formData.first_name}
+            onChange={handleInputChange}
+            disabled={!editMode}
+          />
+        </Form.Group>
+      </Col>
 
-                  <Form.Group className="mb-3">
-                    <Form.Label>Email</Form.Label>
-                    <Form.Control
-                      type="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleInputChange}
-                      disabled={!editMode}
-                    />
-                  </Form.Group>
+      <Col md={6} className="mb-3">
+        <Form.Group>
+          <Form.Label>Last Name</Form.Label>
+          <Form.Control
+            type="text"
+            name="last_name"
+            value={formData.last_name}
+            onChange={handleInputChange}
+            disabled={!editMode}
+          />
+        </Form.Group>
+      </Col>
+    </Row>
 
-                  <Form.Group className="mb-3">
-                    <Form.Label>Address</Form.Label>
-                    <Form.Control
-                      type="text"
-                      name="address"
-                      value={formData.address}
-                      onChange={handleInputChange}
-                      disabled={!editMode}
-                    />
-                  </Form.Group>
+    <Form.Group className="mb-3">
+      <Form.Label>Email</Form.Label>
+      <Form.Control
+        type="email"
+        name="email"
+        value={formData.email}
+        disabled
+      />
+    </Form.Group>
 
-                  {(isAffiliate || editMode) && (
-                    <>
-                      <Form.Group className="mb-3">
-                        <Form.Label>Company</Form.Label>
-                        <Form.Control
-                          type="text"
-                          name="company"
-                          value={formData.company}
-                          onChange={handleInputChange}
-                          disabled={!editMode}
-                        />
-                      </Form.Group>
+    <Form.Group className="mb-3">
+      <Form.Label>Address</Form.Label>
+      <Form.Control
+        type="text"
+        name="address"
+        value={formData.address}
+        onChange={handleInputChange}
+        disabled={!editMode}
+      />
+    </Form.Group>
 
-                      <Form.Group className="mb-3">
-                        <Form.Label>Website</Form.Label>
-                        <Form.Control
-                          type="url"
-                          name="website"
-                          value={formData.website}
-                          onChange={handleInputChange}
-                          disabled={!editMode}
-                        />
-                      </Form.Group>
+    <>
+      <Form.Group className="mb-3">
+        <Form.Label>Company</Form.Label>
+        <Form.Control
+          type="text"
+          name="company"
+          value={formData.company}
+          onChange={handleInputChange}
+          disabled={!editMode}
+        />
+      </Form.Group>
 
-                      <Form.Group className="mb-3">
-                        <Form.Label>Skype</Form.Label>
-                        <Form.Control
-                          type="text"
-                          name="skype"
-                          value={formData.skype}
-                          onChange={handleInputChange}
-                          disabled={!editMode}
-                        />
-                      </Form.Group>
+      <Form.Group className="mb-3">
+        <Form.Label>Website</Form.Label>
+        <Form.Control
+          type="url"
+          name="website"
+          value={formData.website}
+          onChange={handleInputChange}
+          disabled={!editMode}
+        />
+      </Form.Group>
 
-                      <Form.Group className="mb-3">
-                        <Form.Label>Promotion Description</Form.Label>
-                        <Form.Control
-                          as="textarea"
-                          rows={3}
-                          name="promotion_description"
-                          value={formData.promotion_description}
-                          onChange={handleInputChange}
-                          disabled={!editMode}
-                        />
-                      </Form.Group>
-                    </>
-                  )}
-                </Form>
-              )}
+      <Form.Group className="mb-3">
+        <Form.Label>Skype</Form.Label>
+        <Form.Control
+          type="text"
+          name="skype"
+          value={formData.skype}
+          onChange={handleInputChange}
+          disabled={!editMode}
+        />
+      </Form.Group>
+
+      <Form.Group className="mb-3">
+        <Form.Label>Promotion Description</Form.Label>
+        <Form.Control
+          as="textarea"
+          rows={3}
+          name="promotion_description"
+          value={formData.promotion_description}
+          onChange={handleInputChange}
+          disabled={!editMode}
+        />
+      </Form.Group>
+    </>
+  </Form>
+)}
 
               {activeTab === 'payment' && (
-                <Form>
-                  <Form.Group className="mb-3">
-                    <Form.Label>Payment Method</Form.Label>
-                    <Form.Select
-                      name="pay_method"
-                      value={formData.pay_method}
-                      onChange={handleInputChange}
-                      disabled={!editMode || (!isAffiliate && !editMode)}
-                    >
-                      <option value="bank">Bank Transfer</option>
-                      <option value="paypal">PayPal</option>
-                      <option value="payoneer">Payoneer</option>
-                      <option value="wise">Wise</option>
-                    </Form.Select>
-                  </Form.Group>
+  <Form>
+    <Form.Group className="mb-3">
+      <Form.Label>Payment Method</Form.Label>
+      <Form.Select
+        name="pay_method"
+        value={formData.pay_method}
+        onChange={handleInputChange}
+        disabled={!editMode}
+      >
+        <option value="bank">Bank Transfer</option>
+        <option value="paypal">PayPal</option>
+        <option value="payoneer">Payoneer</option>
+        <option value="wise">Wise</option>
+      </Form.Select>
+    </Form.Group>
 
-                  {(isAffiliate || editMode) && (
-                    <>
-                      <Form.Group className="mb-3">
-                        <Form.Label>Account Email</Form.Label>
-                        <Form.Control
-                          type="email"
-                          name="account_email"
-                          value={formData.account_email}
-                          onChange={handleInputChange}
-                          disabled={!editMode}
-                        />
-                      </Form.Group>
+    <>
+      <Form.Group className="mb-3">
+        <Form.Label>Account Email</Form.Label>
+        <Form.Control
+          type="email"
+          name="account_email"
+          value={formData.account_email}
+          onChange={handleInputChange}
+          disabled={!editMode}
+        />
+      </Form.Group>
 
-                      <Form.Group className="mb-3">
-                        <Form.Label>PayPal Email</Form.Label>
-                        <Form.Control
-                          type="email"
-                          name="paypal"
-                          value={formData.paypal}
-                          onChange={handleInputChange}
-                          disabled={!editMode}
-                        />
-                      </Form.Group>
+      <Form.Group className="mb-3">
+        <Form.Label>PayPal Email</Form.Label>
+        <Form.Control
+          type="email"
+          name="paypal"
+          value={formData.paypal}
+          onChange={handleInputChange}
+          disabled={!editMode}
+        />
+      </Form.Group>
 
-                      <Form.Group className="mb-3">
-                        <Form.Label>Payoneer Email</Form.Label>
-                        <Form.Control
-                          type="email"
-                          name="payoneer"
-                          value={formData.payoneer}
-                          onChange={handleInputChange}
-                          disabled={!editMode}
-                        />
-                      </Form.Group>
-                    </>
-                  )}
-                </Form>
-              )}
+      <Form.Group className="mb-3">
+        <Form.Label>Payoneer Email</Form.Label>
+        <Form.Control
+          type="email"
+          name="payoneer"
+          value={formData.payoneer}
+          onChange={handleInputChange}
+          disabled={!editMode}
+        />
+      </Form.Group>
+    </>
+  </Form>
+)}
 
               {activeTab === 'password' && (
                 <Form onSubmit={handlePasswordSubmit}>
