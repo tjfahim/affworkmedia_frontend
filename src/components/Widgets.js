@@ -6,7 +6,7 @@ import { faAngular, faBootstrap, faReact, faVuejs } from "@fortawesome/free-bran
 import { Col, Row, Card, Image, Button, ListGroup, ProgressBar } from '@themesberg/react-bootstrap';
 import { CircleChart, BarChart, SalesValueChart, SalesValueChartphone } from "./Charts";
 
-import Profile1 from "../assets/img/team/profile-picture-1.jpg";
+import Profile1 from "../assets/img/team/icon-7797704_640.png";
 import ProfileCover from "../assets/img/profile-cover.jpg";
 
 import teamMembers from "../data/teamMembers";

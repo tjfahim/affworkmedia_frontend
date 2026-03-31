@@ -14,7 +14,7 @@ import { useAuth } from "../context/AuthContext";
 
 import { Routes } from "../routes";
 import ReactHero from "../assets/img/technologies/react-hero-logo.svg";
-import ProfilePicture from "../assets/img/team/profile-picture-3.jpg";
+import ProfilePicture from "../assets/img/team/icon-7797704_640.png";
 
 export default (props = {}) => {
   const location = useLocation();
