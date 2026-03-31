@@ -6,7 +6,7 @@ import { Row, Col, Nav, Form, Image, Navbar, Dropdown, Container, ListGroup, Inp
 import { useAuth } from "../context/AuthContext"; // Add this import
 
 import NOTIFICATIONS_DATA from "../data/notifications";
-import Profile3 from "../assets/img/team/profile-picture-3.jpg";
+import Profile3 from "../assets/img/team/icon-7797704_640.png";
 import { Link } from 'react-router-dom';
 
 export default (props) => {

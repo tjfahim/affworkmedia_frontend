@@ -354,7 +354,6 @@ export default function Profile() {
         <option value="bank">Bank Transfer</option>
         <option value="paypal">PayPal</option>
         <option value="payoneer">Payoneer</option>
-        <option value="wise">Wise</option>
       </Form.Select>
     </Form.Group>
 
