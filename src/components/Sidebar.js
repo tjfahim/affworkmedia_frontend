@@ -110,6 +110,21 @@ export default (props = {}) => {
                   )}
                 </>
               )}
+
+              {hasRole('affiliate') && (
+                    <>
+                        <NavItem
+                            title="My Payments"
+                            link={Routes.Affiliate.MyPayments.path}
+                            icon={faHandHoldingUsd}
+                        />
+                        <NavItem
+                            title="My Accounts"
+                            link={Routes.Affiliate.MyAccounts.path}
+                            icon={faUserCog}
+                        />
+                    </>
+                )}
             </Nav>
           </div>
         </SimpleBar>

@@ -22,7 +22,13 @@ export const Routes = {
         Settings: { path: "/admin/settings" },
         Affiliates: { path: "/admin/affiliates" },
         MakePayment: { path: "/admin/make-payment" },
-        PaymentHistory: { path: "/admin/payment-history" }
+        PaymentHistory: { path: "/admin/payment-history" },
+      
+    },
+     Affiliate: {
+        MyPayments: { path: "/affiliate/my-payments" },
+        PaymentView: { path: "/affiliate/my-payments/:id" },
+        MyAccounts: { path: "/affiliate/my-accounts" }
     },
 
     // docs

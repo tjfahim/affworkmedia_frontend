@@ -52,7 +52,20 @@ const MakePayment = () => {
         total: 0,
         per_page: 15
     });
+    const getPaymentEmail = () => {
+    if (!selectedAffiliate) return 'No email available';
 
+    switch (paymentForm.pay_method) {
+        case 'paypal':
+            return selectedAffiliate.paypal?.trim() || 'No PayPal email found';
+        case 'payoneer':
+            return selectedAffiliate.payoneer?.trim() || 'No Payoneer email found';
+        case 'bank_transfer':
+            return selectedAffiliate.account_email?.trim() || 'No bank email found';
+        default:
+            return 'No email available';
+    }
+};
     useEffect(() => {
         fetchAffiliates();
     }, [minBalance]); // Refetch when minBalance changes
@@ -97,17 +110,23 @@ const MakePayment = () => {
         setMinBalance(value);
     };
 
+    
+
     const openPaymentModal = (affiliate) => {
-        setSelectedAffiliate(affiliate);
-        setPaymentForm({
-            amount: '',
-            pay_method: affiliate.pay_method || 'paypal',
-            title: 'Commission Withdrawal',
-            description: `Withdrawal request for ${affiliate.name}`,
-            notes: ''
-        });
-        setShowPaymentModal(true);
-    };
+    setSelectedAffiliate(affiliate);
+
+    const fullBalance = parseFloat(affiliate.balance || 0).toFixed(2);
+
+    setPaymentForm({
+        amount: fullBalance, // default to full balance
+        pay_method: affiliate.pay_method || 'paypal',
+        title: 'Commission Withdrawal',
+        description: `Withdrawal request for ${affiliate.name}`,
+        notes: ''
+    });
+
+    setShowPaymentModal(true);
+};
 
     const handlePaymentSubmit = async (e) => {
         e.preventDefault();
@@ -411,15 +430,15 @@ const MakePayment = () => {
                                 <Form.Group className="mb-3">
                                     <Form.Label>Payment Amount</Form.Label>
                                     <Form.Control
-                                        type="number"
-                                        step="0.01"
-                                        placeholder="Leave empty for full balance"
-                                        value={paymentForm.amount}
-                                        onChange={(e) => setPaymentForm({...paymentForm, amount: e.target.value})}
-                                    />
-                                    <Form.Text className="text-muted">
-                                        Leave empty to withdraw full balance
-                                    </Form.Text>
+    type="number"
+    step="0.01"
+    placeholder="Leave empty for full balance"
+    value={paymentForm.amount}
+    onChange={(e) => setPaymentForm({...paymentForm, amount: e.target.value})}
+/>
+<Form.Text className="text-muted">
+    Leave empty to withdraw full balance
+</Form.Text>
                                 </Form.Group>
                             </Col>
                         </Row>
@@ -430,13 +449,25 @@ const MakePayment = () => {
                                     <Form.Label>Payment Method</Form.Label>
                                     <Form.Select
                                         value={paymentForm.pay_method}
-                                        onChange={(e) => setPaymentForm({...paymentForm, pay_method: e.target.value})}
+                                        onChange={(e) =>
+                                            setPaymentForm({
+                                                ...paymentForm,
+                                                pay_method: e.target.value
+                                            })
+                                        }
                                         required
                                     >
                                         <option value="paypal">PayPal</option>
                                         <option value="payoneer">Payoneer</option>
                                         <option value="bank_transfer">Bank Transfer</option>
                                     </Form.Select>
+
+                                    <div className="mt-2 p-2 rounded bg-light border">
+                                        <small className="text-muted d-block">Payment will be sent to:</small>
+                                        <strong className="text-primary">
+                                            {getPaymentEmail()}
+                                        </strong>
+                                    </div>
                                 </Form.Group>
                             </Col>
                             <Col md={6}>

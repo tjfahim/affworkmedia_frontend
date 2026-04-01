@@ -112,7 +112,28 @@ const paymentService = {
             console.error('Error generating invoice:', error);
             throw error;
         }
-    }
+    },
+
+    // Get my single payment details
+    getMyPayments: async (params = {}) => {
+        try {
+            const response = await api.get('/affiliate-payments/my-payments', { params });
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching my payments:', error);
+            throw error;
+        }
+    },
+
+    getMyPaymentView: async (id) => {
+        try {
+            const response = await api.get(`/affiliate-payments/my-payments/${id}`);
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching my payment details:', error);
+            throw error;
+        }
+    },
 };
 
 export default paymentService;
