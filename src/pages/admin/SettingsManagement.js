@@ -7,7 +7,8 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
   faSave, faImage, faGlobe, faLock, faEnvelope, 
-  faEye, faEyeSlash, faTrash, faChartLine, faKey
+  faEye, faEyeSlash, faTrash, faChartLine, faKey,
+  faPercentage  // Add this for commission icon
 } from '@fortawesome/free-solid-svg-icons';
 import settingsAPI from '../../services/settingsService';
 
@@ -34,52 +35,63 @@ const SettingsManagement = () => {
   const [passwordChanged, setPasswordChanged] = useState(false);
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [currentPassword, setCurrentPassword] = useState('');
+  
+  // Affiliate commission states
+  const [defaultAffiliateCommission1, setDefaultAffiliateCommission1] = useState(0);
+  const [defaultAffiliateCommission2, setDefaultAffiliateCommission2] = useState(0);
+  const [defaultAffiliateCommission3, setDefaultAffiliateCommission3] = useState(0);
 
   useEffect(() => {
     fetchSettings();
   }, []);
 
   const fetchSettings = async () => {
-  try {
-    setLoading(true);
-    const response = await settingsAPI.getSettings();
-    
-    console.log('Settings response:', response.data);
-    
-    if (response.data && response.data.success === true) {
-      setSettings(response.data.data);
-      setLanderpageDomain(response.data.data?.landerpage_domain || '');
-      setDefaultSaleHide(response.data.data?.default_sale_hide || 0);
-      setDefaultPaymentMail(response.data.data?.default_payment_mail || '');
+    try {
+      setLoading(true);
+      const response = await settingsAPI.getSettings();
       
-      // Store the actual password if it exists
-      if (response.data.data?.default_master_password) {
-        setCurrentPassword(response.data.data.default_master_password);
-        setHasExistingPassword(true);
+      console.log('Settings response:', response.data);
+      
+      if (response.data && response.data.success === true) {
+        setSettings(response.data.data);
+        setLanderpageDomain(response.data.data?.landerpage_domain || '');
+        setDefaultSaleHide(response.data.data?.default_sale_hide || 0);
+        setDefaultPaymentMail(response.data.data?.default_payment_mail || '');
+        
+        // Set affiliate commission values
+        setDefaultAffiliateCommission1(response.data.data?.default_affiliate_commission_1 || 0);
+        setDefaultAffiliateCommission2(response.data.data?.default_affiliate_commission_2 || 0);
+        setDefaultAffiliateCommission3(response.data.data?.default_affiliate_commission_3 || 0);
+        
+        // Store the actual password if it exists
+        if (response.data.data?.default_master_password) {
+          setCurrentPassword(response.data.data.default_master_password);
+          setHasExistingPassword(true);
+        } else {
+          setCurrentPassword('');
+          setHasExistingPassword(false);
+        }
+        
+        // Set previews if images exist
+        if (response.data.data?.logo) {
+          setLogoPreview(getImageUrl(response.data.data.logo));
+        }
+        if (response.data.data?.favicon) {
+          setFaviconPreview(getImageUrl(response.data.data.favicon));
+        }
+        
+        setError('');
       } else {
-        setCurrentPassword('');
-        setHasExistingPassword(false);
+        setError('Invalid response format');
       }
-      
-      // Set previews if images exist
-      if (response.data.data?.logo) {
-        setLogoPreview(getImageUrl(response.data.data.logo));
-      }
-      if (response.data.data?.favicon) {
-        setFaviconPreview(getImageUrl(response.data.data.favicon));
-      }
-      
-      setError('');
-    } else {
-      setError('Invalid response format');
+    } catch (error) {
+      console.error('Failed to fetch settings:', error);
+      setError(error.response?.data?.message || 'Failed to fetch settings');
+    } finally {
+      setLoading(false);
     }
-  } catch (error) {
-    console.error('Failed to fetch settings:', error);
-    setError(error.response?.data?.message || 'Failed to fetch settings');
-  } finally {
-    setLoading(false);
-  }
-};
+  };
+  
   const handleLogoChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -170,6 +182,11 @@ const SettingsManagement = () => {
           formData.append('default_payment_mail', defaultPaymentMail);
         }
         
+        // Append affiliate commissions
+        formData.append('default_affiliate_commission_1', String(defaultAffiliateCommission1));
+        formData.append('default_affiliate_commission_2', String(defaultAffiliateCommission2));
+        formData.append('default_affiliate_commission_3', String(defaultAffiliateCommission3));
+        
         // Only append password if it's changed and not empty
         if (passwordChanged && defaultMasterPassword && defaultMasterPassword.trim() !== '') {
           formData.append('default_master_password', defaultMasterPassword);
@@ -237,6 +254,11 @@ const SettingsManagement = () => {
         if (defaultPaymentMail) {
           updateData.default_payment_mail = defaultPaymentMail;
         }
+        
+        // Add affiliate commissions
+        updateData.default_affiliate_commission_1 = defaultAffiliateCommission1;
+        updateData.default_affiliate_commission_2 = defaultAffiliateCommission2;
+        updateData.default_affiliate_commission_3 = defaultAffiliateCommission3;
         
         // Only append password if it's changed and not empty
         if (passwordChanged && defaultMasterPassword && defaultMasterPassword.trim() !== '') {
@@ -515,77 +537,77 @@ const SettingsManagement = () => {
                 </h5>
               </Card.Header>
               <Card.Body>
-              <Form.Group className="mb-3">
-                <Form.Label className="fw-bold">
-                  <FontAwesomeIcon icon={faKey} className="me-2 text-warning" />
-                  Default Master Password
-                </Form.Label>
-                   {hasExistingPassword && (
-    <div className="mb-2 p-2 bg-light rounded border">
-      <div className="d-flex justify-content-between align-items-center">
-        <div>
-          <small className="text-muted">Current Password:</small>
-          <div className="font-monospace">
-            {showCurrentPassword ? (
-              <span className="fw-bold text-dark">{currentPassword}</span>
-            ) : (
-              <span className="text-muted">••••••••</span>
-            )}
-          </div>
-        </div>
-        <Button
-          variant="link"
-          size="sm"
-          onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-          className="text-decoration-none"
-        >
-          <FontAwesomeIcon icon={showCurrentPassword ? faEyeSlash : faEye} />
-          <span className="ms-1">{showCurrentPassword ? 'Hide' : 'Show'}</span>
-        </Button>
-      </div>
-    </div>
-  )}
-  
-  <div className="position-relative">
-    <Form.Control
-      type={showPassword ? "text" : "password"}
-      value={defaultMasterPassword}
-      onChange={handlePasswordChange}
-      placeholder={hasExistingPassword ? "Enter new password (leave blank to keep current)" : "Enter new password"}
-    />
-    <Button
-      variant="link"
-      className="position-absolute end-0 top-50 translate-middle-y"
-      onClick={() => setShowPassword(!showPassword)}
-      style={{ textDecoration: 'none' }}
-    >
-      <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
-    </Button>
-  </div>
-  <Form.Text className="text-muted">
-    {hasExistingPassword ? (
-      <>
-        <span className="text-success">✓ Password is set</span>
-        <br />
-        Enter new password to change it. Minimum 6 characters.
-      </>
-    ) : (
-      "No password set. Enter a new password (minimum 6 characters)."
-    )}
-  </Form.Text>
-  
-  {passwordChanged && defaultMasterPassword && defaultMasterPassword.trim() !== '' && (
-    <Alert variant="info" className="mt-2 p-2 small">
-      <FontAwesomeIcon icon={faKey} className="me-1" />
-      Password will be updated when you save.
-    </Alert>
-  )}
-</Form.Group>
+                <Form.Group className="mb-3">
+                  <Form.Label className="fw-bold">
+                    <FontAwesomeIcon icon={faKey} className="me-2 text-warning" />
+                    Default Master Password
+                  </Form.Label>
+                  {hasExistingPassword && (
+                    <div className="mb-2 p-2 bg-light rounded border">
+                      <div className="d-flex justify-content-between align-items-center">
+                        <div>
+                          <small className="text-muted">Current Password:</small>
+                          <div className="font-monospace">
+                            {showCurrentPassword ? (
+                              <span className="fw-bold text-dark">{currentPassword}</span>
+                            ) : (
+                              <span className="text-muted">••••••••</span>
+                            )}
+                          </div>
+                        </div>
+                        <Button
+                          variant="link"
+                          size="sm"
+                          onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                          className="text-decoration-none"
+                        >
+                          <FontAwesomeIcon icon={showCurrentPassword ? faEyeSlash : faEye} />
+                          <span className="ms-1">{showCurrentPassword ? 'Hide' : 'Show'}</span>
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                  
+                  <div className="position-relative">
+                    <Form.Control
+                      type={showPassword ? "text" : "password"}
+                      value={defaultMasterPassword}
+                      onChange={handlePasswordChange}
+                      placeholder={hasExistingPassword ? "Enter new password (leave blank to keep current)" : "Enter new password"}
+                    />
+                    <Button
+                      variant="link"
+                      className="position-absolute end-0 top-50 translate-middle-y"
+                      onClick={() => setShowPassword(!showPassword)}
+                      style={{ textDecoration: 'none' }}
+                    >
+                      <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
+                    </Button>
+                  </div>
+                  <Form.Text className="text-muted">
+                    {hasExistingPassword ? (
+                      <>
+                        <span className="text-success">✓ Password is set</span>
+                        <br />
+                        Enter new password to change it. Minimum 6 characters.
+                      </>
+                    ) : (
+                      "No password set. Enter a new password (minimum 6 characters)."
+                    )}
+                  </Form.Text>
+                  
+                  {passwordChanged && defaultMasterPassword && defaultMasterPassword.trim() !== '' && (
+                    <Alert variant="info" className="mt-2 p-2 small">
+                      <FontAwesomeIcon icon={faKey} className="me-1" />
+                      Password will be updated when you save.
+                    </Alert>
+                  )}
+                </Form.Group>
 
                 <Form.Group>
                   <Form.Label className="fw-bold">
                     <FontAwesomeIcon icon={faChartLine} className="me-2 text-primary" />
-                    Sale Hide Threshold
+                    Sale Hide
                   </Form.Label>
                   <Form.Control
                     type="number"
@@ -597,7 +619,66 @@ const SettingsManagement = () => {
                     placeholder="Enter number"
                   />
                   <Form.Text className="text-muted d-block mt-2">
-                    Automatically hide sales when count reaches this threshold (0 = show all, max 100)
+                    Automatically hide sales
+                  </Form.Text>
+                </Form.Group>
+              </Card.Body>
+            </Card>
+
+            {/* Affiliate Commission Settings */}
+            <Card className="border-0 shadow-sm mb-4">
+              <Card.Header className="bg-white border-0 pt-4 pb-2">
+                <h5 className="mb-0">
+                  <FontAwesomeIcon icon={faPercentage} className="me-2 text-primary" />
+                  Affiliate Commission Settings
+                </h5>
+              </Card.Header>
+              <Card.Body>
+                <Form.Group className="mb-3">
+                  <Form.Label className="fw-bold">Default Commission Level 1 (%)</Form.Label>
+                  <Form.Control
+                    type="number"
+                    value={defaultAffiliateCommission1}
+                    onChange={(e) => setDefaultAffiliateCommission1(parseInt(e.target.value) || 0)}
+                    min="0"
+                    max="100"
+                    step="1"
+                    placeholder="Enter commission percentage"
+                  />
+                  <Form.Text className="text-muted">
+                    Commission percentage for first level affiliates (0-100%)
+                  </Form.Text>
+                </Form.Group>
+
+                <Form.Group className="mb-3">
+                  <Form.Label className="fw-bold">Default Commission Level 2 (%)</Form.Label>
+                  <Form.Control
+                    type="number"
+                    value={defaultAffiliateCommission2}
+                    onChange={(e) => setDefaultAffiliateCommission2(parseInt(e.target.value) || 0)}
+                    min="0"
+                    max="100"
+                    step="1"
+                    placeholder="Enter commission percentage"
+                  />
+                  <Form.Text className="text-muted">
+                    Commission percentage for second level affiliates (0-100%)
+                  </Form.Text>
+                </Form.Group>
+
+                <Form.Group>
+                  <Form.Label className="fw-bold">Default Commission Level 3 (%)</Form.Label>
+                  <Form.Control
+                    type="number"
+                    value={defaultAffiliateCommission3}
+                    onChange={(e) => setDefaultAffiliateCommission3(parseInt(e.target.value) || 0)}
+                    min="0"
+                    max="100"
+                    step="1"
+                    placeholder="Enter commission percentage"
+                  />
+                  <Form.Text className="text-muted">
+                    Commission percentage for third level affiliates (0-100%)
                   </Form.Text>
                 </Form.Group>
               </Card.Body>

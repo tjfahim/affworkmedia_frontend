@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Route, Switch, Redirect,useLocation, useHistory } from "react-router-dom";
-import { AuthProvider } from "../context/AuthContext";
+import { Route, Switch, Redirect, useLocation, useHistory } from "react-router-dom";
+import { AuthProvider, useAuth } from "../context/AuthContext";
 import ProtectedRoute from "../components/ProtectedRoute";
 import { Routes } from "../routes";
 
@@ -42,29 +42,43 @@ const RouteWithLoader = ({ component: Component, ...rest }) => {
   );
 };
 
+// Component to handle root path redirection
+const RootRedirect = () => {
+  const { user, initialLoading } = useAuth();
+  const history = useHistory();
+  
+  useEffect(() => {
+    if (!initialLoading) {
+      if (user) {
+        history.replace('/dashboard/overview');
+      } else {
+        // Stay on presentation page
+      }
+    }
+  }, [user, initialLoading, history]);
+  
+  return <Presentation />;
+};
+
 export default () => {
   const location = useLocation();
   const history = useHistory();
-  const token = localStorage.getItem('access_token');
-  const user = localStorage.getItem('user');
+  const { user, initialLoading } = useAuth();
   
   useEffect(() => {
-    // If on root path and user is logged in, redirect to dashboard
-    if ((location.pathname === '/' || location.pathname === '') && token && user) {
-      history.replace('/dashboard/overview');
-    }
-  }, [location, history, token, user]);
+    // Remove the old redirect logic from here since it's now handled in RootRedirect
+    // and the AuthProvider handles profile fetch on load
+  }, [location, history]);
   
   return (
-  <AuthProvider>
     <Switch>
-       <RouteWithLoader exact path={Routes.Presentation.path} component={Presentation} />
+      <RouteWithLoader exact path={Routes.Presentation.path} component={RootRedirect} />
       <RouteWithLoader exact path={Routes.NotFound.path} component={NotFoundPage} />
 
       {/* pages - protected routes */}
       <ProtectedRoute exact path={Routes.DashboardOverview.path} component={DashboardOverview} />
       <ProtectedRoute exact path={Routes.Profile.path} component={Profile} />
-      <ProtectedRoute  exact path={Routes.Admin.Users.path} component={UserManagement} requiredPermission="view users"/>
+      <ProtectedRoute exact path={Routes.Admin.Users.path} component={UserManagement} requiredPermission="view users"/>
       <ProtectedRoute exact path={Routes.Admin.Roles.path} component={RoleManagement} requiredRole="super-admin"/>
       <ProtectedRoute exact path={Routes.Admin.Teams.path} component={TeamManagement} requiredRole="super-admin" />
       <ProtectedRoute exact path={Routes.Admin.Games.path} component={GameManagement} requiredRole="super-admin" />
@@ -80,6 +94,5 @@ export default () => {
 
       <Redirect to={Routes.NotFound.path} />
     </Switch>
-  </AuthProvider>
-
-)};
+  );
+};

@@ -1,29 +1,38 @@
+// pages/Profile.js
 import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { 
-  faUser, faSave,
-  faEdit, faTimes, faKey
+  faUser, faSave, faEdit, faTimes, faKey, faCheckCircle, faClock, faLock,
+  faSync, faRefresh
 } from "@fortawesome/free-solid-svg-icons";
 import { 
   Row, Col, Card, Form, Button, Alert, Nav as BSNav, Badge, Spinner 
 } from '@themesberg/react-bootstrap';
 import { useAuth } from "../context/AuthContext";
 import { userAPI } from "../services/api";
+import { useToast } from "../context/ToastContext";
+import api from "../services/api";
+
+// Import components
+import ProfileInfoSection from "./components/profile/ProfileInfoSection";
+import AffiliatePaymentSection from "./components/profile/AffiliatePaymentSection";
+import AffiliateCommissionSection from "./components/profile/AffiliateCommissionSection";
 
 export default function Profile() {
-  const { user, updateUser } = useAuth();
+  const { user, updateUser, fetchUserProfile } = useAuth();
+  const toast = useToast();
   
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(null);
+  const [refreshing, setRefreshing] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [activeTab, setActiveTab] = useState('profile');
+  const [requestingPayment, setRequestingPayment] = useState(false);
+  const [requestingPaymentType, setRequestingPaymentType] = useState(null);
 
   // Check if user is affiliate
   const isAffiliate = user?.roles?.some(role => 
     role.name === 'affiliate' || role.name === 'Affiliate'
   );
-  
 
   // Form state
   const [formData, setFormData] = useState({
@@ -39,6 +48,9 @@ export default function Profile() {
     promotion_description: '',
     payoneer: '',
     paypal: '',
+    binance: '',
+    bank_details: '',
+    other_payment_method_description: '',
   });
 
   // Password change state
@@ -48,6 +60,15 @@ export default function Profile() {
     new_password_confirmation: ''
   });
 
+  // Payment method status states
+  const [paymentStatuses, setPaymentStatuses] = useState({
+    edit_paypal_mail_status: 'deactive',
+    edit_payoneer_mail_status: 'deactive',
+    edit_bank_details_status: 'deactive',
+    edit_binance_mail_status: 'deactive',
+    edit_other_payment_method_description_status: 'deactive',
+  });
+
   useEffect(() => {
     if (user) {
       setFormData({
@@ -55,7 +76,7 @@ export default function Profile() {
         last_name: user.last_name || '',
         email: user.email || '',
         address: user.address || '',
-        pay_method: user.pay_method || 'bank',
+        pay_method: user.pay_method || '',
         account_email: user.account_email || '',
         skype: user.skype || '',
         company: user.company || '',
@@ -63,13 +84,67 @@ export default function Profile() {
         promotion_description: user.promotion_description || '',
         payoneer: user.payoneer || '',
         paypal: user.paypal || '',
+        binance: user.binance || '',
+        bank_details: user.bank_details || '',
+        other_payment_method_description: user.other_payment_method_description || '',
+      });
+
+      setPaymentStatuses({
+        edit_paypal_mail_status: user.edit_paypal_mail_status || 'deactive',
+        edit_payoneer_mail_status: user.edit_payoneer_mail_status || 'deactive',
+        edit_bank_details_status: user.edit_bank_details_status || 'deactive',
+        edit_binance_mail_status: user.edit_binance_mail_status || 'deactive',
+        edit_other_payment_method_description_status: user.edit_other_payment_method_description_status || 'deactive',
       });
     }
   }, [user]);
 
+  // Refresh user data from API
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    try {
+      if (fetchUserProfile) {
+        const freshUser = await fetchUserProfile();
+        if (freshUser) {
+          toast.success('Profile refreshed successfully!');
+        } else {
+          toast.error('Failed to refresh profile');
+        }
+      } else {
+        // Fallback if fetchUserProfile is not available
+        const response = await userAPI.getProfile();
+        if (response.data && response.data.success) {
+          updateUser(response.data.user);
+          toast.success('Profile refreshed successfully!');
+        } else {
+          toast.error('Failed to refresh profile');
+        }
+      }
+    } catch (error) {
+      console.error('Refresh error:', error);
+      toast.error('Failed to refresh profile');
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
+  // Check if a specific payment method can be edited
+  const canEditPaymentMethod = (status) => {
+    return status === 'active';
+  };
+
+  // Check if a payment method can be requested (only when deactive)
+  const canRequestPaymentMethod = (status) => {
+    return status === 'deactive';
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleFormFieldChange = (field, value) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
   };
 
   const handlePasswordChange = (e) => {
@@ -80,19 +155,24 @@ export default function Profile() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSaving(true);
-    setError(null);
-    setSuccess(null);
 
     try {
       const response = await userAPI.updateProfile(formData);
       if (response.data.success) {
-        setSuccess('Profile updated successfully!');
+        toast.success('Profile updated successfully!');
         setEditMode(false);
-        // Update local user data
-       updateUser(response.data.user);
+        updateUser(response.data.user);
+      } else {
+        toast.error(response.data.message || 'Failed to update profile');
       }
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to update profile');
+      console.error('Update profile error:', err);
+      if (err.response?.data?.errors) {
+        const errorMessages = Object.values(err.response.data.errors).flat();
+        toast.error(errorMessages.join(', '));
+      } else {
+        toast.error(err.response?.data?.message || 'Failed to update profile');
+      }
     } finally {
       setSaving(false);
     }
@@ -102,28 +182,131 @@ export default function Profile() {
     e.preventDefault();
     
     if (passwordData.new_password !== passwordData.new_password_confirmation) {
-      setError('New passwords do not match');
+      toast.error('New passwords do not match');
+      return;
+    }
+
+    if (passwordData.new_password.length < 8) {
+      toast.error('Password must be at least 8 characters');
       return;
     }
 
     setSaving(true);
-    setError(null);
-    setSuccess(null);
 
     try {
       const response = await userAPI.changePassword(passwordData);
       if (response.data.success) {
-        setSuccess('Password changed successfully!');
+        toast.success('Password changed successfully!');
         setPasswordData({
           current_password: '',
           new_password: '',
           new_password_confirmation: ''
         });
+      } else {
+        toast.error(response.data.message || 'Failed to change password');
       }
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to change password');
+      console.error('Change password error:', err);
+      toast.error(err.response?.data?.message || 'Failed to change password');
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleRequestPaymentChange = async (paymentType, value) => {
+    // Check if status is deactive before allowing request
+    let currentStatus;
+    switch(paymentType) {
+      case 'paypal':
+        currentStatus = paymentStatuses.edit_paypal_mail_status;
+        break;
+      case 'payoneer':
+        currentStatus = paymentStatuses.edit_payoneer_mail_status;
+        break;
+      case 'bank':
+        currentStatus = paymentStatuses.edit_bank_details_status;
+        break;
+      case 'binance':
+        currentStatus = paymentStatuses.edit_binance_mail_status;
+        break;
+      case 'other':
+        currentStatus = paymentStatuses.edit_other_payment_method_description_status;
+        break;
+      default:
+        currentStatus = 'deactive';
+    }
+
+    if (currentStatus !== 'deactive') {
+      toast.error(`Cannot request activation - Payment method is ${currentStatus === 'active' ? 'already active' : 'pending approval'}`);
+      return;
+    }
+
+    setRequestingPayment(true);
+    setRequestingPaymentType(paymentType);
+
+    try {
+      // Get the current value from formData
+      let currentValue;
+      switch(paymentType) {
+        case 'paypal':
+          currentValue = formData.paypal;
+          break;
+        case 'payoneer':
+          currentValue = formData.payoneer;
+          break;
+        case 'bank':
+          currentValue = formData.bank_details;
+          break;
+        case 'binance':
+          currentValue = formData.binance;
+          break;
+        case 'other':
+          currentValue = formData.other_payment_method_description;
+          break;
+        default:
+          currentValue = '';
+      }
+
+      const response = await api.post('/affiliate/request-payment-change', {
+        payment_type: paymentType,
+        value: currentValue || '' // Send empty string if no value
+      });
+
+      if (response.data.success) {
+        toast.success('Payment method activation request submitted successfully!');
+        
+        // Update local status to show it's pending
+        if (paymentType === 'bank') {
+          setPaymentStatuses(prev => ({ ...prev, edit_bank_details_status: 'requested' }));
+        } else if (paymentType === 'other') {
+          setPaymentStatuses(prev => ({ ...prev, edit_other_payment_method_description_status: 'requested' }));
+        } else {
+          setPaymentStatuses(prev => ({ ...prev, [`edit_${paymentType}_mail_status`]: 'requested' }));
+        }
+        
+        // Update user data from response
+        if (response.data.user) {
+          updateUser(response.data.user);
+        } else {
+          const profileResponse = await userAPI.getProfile();
+          if (profileResponse.data.success) {
+            updateUser(profileResponse.data.user);
+          }
+        }
+      } else {
+        toast.error(response.data.message || 'Failed to submit request');
+      }
+    } catch (err) {
+      console.error('Request payment change error:', err);
+      if (err.response?.data?.errors) {
+        const errorMessages = Object.values(err.response.data.errors).flat();
+        toast.error(errorMessages.join(', '));
+      } else {
+        toast.error(err.response?.data?.message || 'Failed to submit request');
+      }
+    } finally {
+      setRequestingPayment(false);
+      setRequestingPaymentType(null);
     }
   };
 
@@ -156,25 +339,45 @@ export default function Profile() {
           <h4>Profile Settings</h4>
           <p className="mb-0">Manage your account settings and preferences</p>
         </div>
-        {!editMode ? (
-          <Button variant="primary" size="sm" onClick={() => setEditMode(true)}>
-            <FontAwesomeIcon icon={faEdit} className="me-2" /> Edit Profile
+        <div className="d-flex gap-2">
+          {/* Refresh Button */}
+          <Button 
+            variant="outline-info" 
+            size="sm" 
+            onClick={handleRefresh}
+            disabled={refreshing}
+            title="Refresh profile data"
+          >
+            {refreshing ? (
+              <>
+                <Spinner animation="border" size="sm" className="me-1" />
+                Refreshing...
+              </>
+            ) : (
+              <>
+                <FontAwesomeIcon icon={faSync} className="me-1" />
+                Refresh
+              </>
+            )}
           </Button>
-        ) : (
-          <div>
-            <Button variant="success" size="sm" onClick={handleSubmit} disabled={saving} className="me-2">
-              {saving ? <Spinner animation="border" size="sm" /> : <FontAwesomeIcon icon={faSave} className="me-2" />}
-              {saving ? 'Saving...' : 'Save Changes'}
+          
+          {!editMode ? (
+            <Button variant="primary" size="sm" onClick={() => setEditMode(true)}>
+              <FontAwesomeIcon icon={faEdit} className="me-2" /> Edit Profile
             </Button>
-            <Button variant="outline-secondary" size="sm" onClick={() => setEditMode(false)}>
-              <FontAwesomeIcon icon={faTimes} className="me-2" /> Cancel
-            </Button>
-          </div>
-        )}
+          ) : (
+            <div>
+              <Button variant="success" size="sm" onClick={handleSubmit} disabled={saving} className="me-2">
+                {saving ? <Spinner animation="border" size="sm" /> : <FontAwesomeIcon icon={faSave} className="me-2" />}
+                {saving ? 'Saving...' : 'Save Changes'}
+              </Button>
+              <Button variant="outline-secondary" size="sm" onClick={() => setEditMode(false)}>
+                <FontAwesomeIcon icon={faTimes} className="me-2" /> Cancel
+              </Button>
+            </div>
+          )}
+        </div>
       </div>
-
-      {error && <Alert variant="danger">{error}</Alert>}
-      {success && <Alert variant="success">{success}</Alert>}
 
       <Row>
         <Col xs={12} xl={4} className="mb-4">
@@ -207,6 +410,12 @@ export default function Profile() {
                 <span>Member Since:</span>
                 <strong>{new Date(user.created_at).toLocaleDateString()}</strong>
               </div>
+              <div className="d-flex justify-content-between mt-2 pt-2 border-top">
+                <span className="text-muted small">Last Updated:</span>
+                <small className="text-muted">
+                  {new Date().toLocaleTimeString()}
+                </small>
+              </div>
             </Card.Body>
           </Card>
         </Col>
@@ -223,14 +432,26 @@ export default function Profile() {
                     Profile Information
                   </BSNav.Link>
                 </BSNav.Item>
-                <BSNav.Item>
-                  <BSNav.Link 
-                    active={activeTab === 'payment'} 
-                    onClick={() => setActiveTab('payment')}
-                  >
-                    Payment Details
-                  </BSNav.Link>
-                </BSNav.Item>
+                {isAffiliate && (
+                  <BSNav.Item>
+                    <BSNav.Link 
+                      active={activeTab === 'payment'} 
+                      onClick={() => setActiveTab('payment')}
+                    >
+                      Payment Details
+                    </BSNav.Link>
+                  </BSNav.Item>
+                )}
+                {isAffiliate && (
+                  <BSNav.Item>
+                    <BSNav.Link 
+                      active={activeTab === 'affiliate'} 
+                      onClick={() => setActiveTab('affiliate')}
+                    >
+                      Affiliate Settings
+                    </BSNav.Link>
+                  </BSNav.Item>
+                )}
                 <BSNav.Item>
                   <BSNav.Link 
                     active={activeTab === 'password'} 
@@ -241,158 +462,31 @@ export default function Profile() {
                 </BSNav.Item>
               </BSNav>
 
-             {activeTab === 'profile' && (
-  <Form>
-    <Row>
-      <Col md={6} className="mb-3">
-        <Form.Group>
-          <Form.Label>First Name</Form.Label>
-          <Form.Control
-            type="text"
-            name="first_name"
-            value={formData.first_name}
-            onChange={handleInputChange}
-            disabled={!editMode}
-          />
-        </Form.Group>
-      </Col>
+              {activeTab === 'profile' && (
+                <ProfileInfoSection 
+                  formData={formData}
+                  editMode={editMode}
+                  onInputChange={handleInputChange}
+                />
+              )}
 
-      <Col md={6} className="mb-3">
-        <Form.Group>
-          <Form.Label>Last Name</Form.Label>
-          <Form.Control
-            type="text"
-            name="last_name"
-            value={formData.last_name}
-            onChange={handleInputChange}
-            disabled={!editMode}
-          />
-        </Form.Group>
-      </Col>
-    </Row>
+              {activeTab === 'payment' && isAffiliate && (
+                <AffiliatePaymentSection
+                  formData={formData}
+                  paymentStatuses={paymentStatuses}
+                  editMode={editMode}
+                  requestingPayment={requestingPayment}
+                  requestingPaymentType={requestingPaymentType}
+                  onFormChange={handleFormFieldChange}
+                  onRequestActivation={handleRequestPaymentChange}
+                  canEditPaymentMethod={canEditPaymentMethod}
+                  canRequestPaymentMethod={canRequestPaymentMethod}
+                />
+              )}
 
-    <Form.Group className="mb-3">
-      <Form.Label>Email</Form.Label>
-      <Form.Control
-        type="email"
-        name="email"
-        value={formData.email}
-        disabled
-      />
-    </Form.Group>
-
-    <Form.Group className="mb-3">
-      <Form.Label>Address</Form.Label>
-      <Form.Control
-        type="text"
-        name="address"
-        value={formData.address}
-        onChange={handleInputChange}
-        disabled={!editMode}
-      />
-    </Form.Group>
-
-    <>
-      <Form.Group className="mb-3">
-        <Form.Label>Company</Form.Label>
-        <Form.Control
-          type="text"
-          name="company"
-          value={formData.company}
-          onChange={handleInputChange}
-          disabled={!editMode}
-        />
-      </Form.Group>
-
-      <Form.Group className="mb-3">
-        <Form.Label>Website</Form.Label>
-        <Form.Control
-          type="url"
-          name="website"
-          value={formData.website}
-          onChange={handleInputChange}
-          disabled={!editMode}
-        />
-      </Form.Group>
-
-      <Form.Group className="mb-3">
-        <Form.Label>Skype</Form.Label>
-        <Form.Control
-          type="text"
-          name="skype"
-          value={formData.skype}
-          onChange={handleInputChange}
-          disabled={!editMode}
-        />
-      </Form.Group>
-
-      <Form.Group className="mb-3">
-        <Form.Label>Promotion Description</Form.Label>
-        <Form.Control
-          as="textarea"
-          rows={3}
-          name="promotion_description"
-          value={formData.promotion_description}
-          onChange={handleInputChange}
-          disabled={!editMode}
-        />
-      </Form.Group>
-    </>
-  </Form>
-)}
-
-              {activeTab === 'payment' && (
-  <Form>
-    <Form.Group className="mb-3">
-      <Form.Label>Payment Method</Form.Label>
-      <Form.Select
-        name="pay_method"
-        value={formData.pay_method}
-        onChange={handleInputChange}
-        disabled={!editMode}
-      >
-        <option value="bank">Bank Transfer</option>
-        <option value="paypal">PayPal</option>
-        <option value="payoneer">Payoneer</option>
-      </Form.Select>
-    </Form.Group>
-
-    <>
-      <Form.Group className="mb-3">
-        <Form.Label>Account Email</Form.Label>
-        <Form.Control
-          type="email"
-          name="account_email"
-          value={formData.account_email}
-          onChange={handleInputChange}
-          disabled={!editMode}
-        />
-      </Form.Group>
-
-      <Form.Group className="mb-3">
-        <Form.Label>PayPal Email</Form.Label>
-        <Form.Control
-          type="email"
-          name="paypal"
-          value={formData.paypal}
-          onChange={handleInputChange}
-          disabled={!editMode}
-        />
-      </Form.Group>
-
-      <Form.Group className="mb-3">
-        <Form.Label>Payoneer Email</Form.Label>
-        <Form.Control
-          type="email"
-          name="payoneer"
-          value={formData.payoneer}
-          onChange={handleInputChange}
-          disabled={!editMode}
-        />
-      </Form.Group>
-    </>
-  </Form>
-)}
+              {activeTab === 'affiliate' && isAffiliate && (
+                <AffiliateCommissionSection user={user} />
+              )}
 
               {activeTab === 'password' && (
                 <Form onSubmit={handlePasswordSubmit}>

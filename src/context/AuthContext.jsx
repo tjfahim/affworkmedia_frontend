@@ -9,48 +9,20 @@ const AuthContext = createContext(null);
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true); // Add this
   const [error, setError] = useState(null);
   const [permissions, setPermissions] = useState([]);
   const [roles, setRoles] = useState([]);
   const history = useHistory();
 
-  useEffect(() => {
-    // Check if user is logged in on mount
-    const token = localStorage.getItem('access_token');
-    const savedUser = localStorage.getItem('user');
-    if (token && savedUser) {
-      try {
-        const parsedUser = JSON.parse(savedUser);
-        setUser(parsedUser);
-        
-        // Extract permissions and roles from saved user
-        const userPermissions = extractPermissions(parsedUser);
-        const userRoles = extractRoles(parsedUser);
-        
-        setPermissions(userPermissions);
-        setRoles(userRoles);
-        
-        console.log('Loaded from storage - Permissions:', userPermissions);
-        console.log('Loaded from storage - Roles:', userRoles);
-      } catch (error) {
-        console.error('Error parsing saved user:', error);
-        // Clear invalid data
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('user');
-      }
-    }
-  }, []);
-
   // Helper function to extract permissions from user object
   const extractPermissions = (userData) => {
     let extractedPermissions = [];
     
-    // Check if user has direct permissions
     if (userData.permissions && Array.isArray(userData.permissions)) {
       extractedPermissions = [...extractedPermissions, ...userData.permissions.map(p => p.name)];
     }
     
-    // Check if user has roles with permissions
     if (userData.roles && Array.isArray(userData.roles)) {
       userData.roles.forEach(role => {
         if (role.permissions && Array.isArray(role.permissions)) {
@@ -62,11 +34,9 @@ export const AuthProvider = ({ children }) => {
       });
     }
     
-    // Remove duplicates
     return [...new Set(extractedPermissions)];
   };
 
-  // Helper function to extract roles
   const extractRoles = (userData) => {
     if (userData.roles && Array.isArray(userData.roles)) {
       return userData.roles.map(r => r.name);
@@ -74,29 +44,72 @@ export const AuthProvider = ({ children }) => {
     return [];
   };
 
+  // Fetch fresh user profile from API
+  const fetchUserProfile = async () => {
+    try {
+      const token = localStorage.getItem('access_token');
+      if (!token) {
+        return null;
+      }
+
+      const response = await api.get('/profile');
+      if (response.data && response.data.success === true && response.data.user) {
+        const userData = response.data.user;
+        
+        const userPermissions = extractPermissions(userData);
+        const userRoles = extractRoles(userData);
+        
+        setUser(userData);
+        setPermissions(userPermissions);
+        setRoles(userRoles);
+        
+        // Update localStorage with fresh data
+        localStorage.setItem('user', JSON.stringify(userData));
+        
+        return userData;
+      }
+      return null;
+    } catch (error) {
+      console.error('Failed to fetch user profile:', error);
+      if (error.response && error.response.status === 401) {
+        // Token is invalid, clear it
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('user');
+      }
+      return null;
+    }
+  };
+
+  // Load user on initial app load - fetch fresh profile from API
+  useEffect(() => {
+    const loadUser = async () => {
+      setInitialLoading(true);
+      const token = localStorage.getItem('access_token');
+      
+      if (token) {
+        await fetchUserProfile();
+      }
+      setInitialLoading(false);
+    };
+    
+    loadUser();
+  }, []);
+
   const login = async (email, password) => {
     setLoading(true);
     setError(null);
     
     try {
-      console.log('Attempting login with:', { email, password });
-      
       const response = await authAPI.login({ email, password });
-      console.log('Login response:', response.data);
       
       if (response.data && response.data.success === true) {
         const { user, access_token } = response.data;
         
-        // Store in localStorage
         localStorage.setItem('access_token', access_token);
         localStorage.setItem('user', JSON.stringify(user));
         
-        // Extract permissions and roles
         const userPermissions = extractPermissions(user);
         const userRoles = extractRoles(user);
-        
-        console.log('Extracted permissions:', userPermissions);
-        console.log('Extracted roles:', userRoles);
         
         setUser(user);
         setPermissions(userPermissions);
@@ -115,9 +128,6 @@ export const AuthProvider = ({ children }) => {
       let errorMessage = 'Login failed. Please try again.';
       
       if (err.response) {
-        console.log('Error response data:', err.response.data);
-        console.log('Error response status:', err.response.status);
-        
         if (err.response.data && err.response.data.message) {
           errorMessage = err.response.data.message;
         } else if (err.response.data && err.response.data.errors) {
@@ -127,14 +137,9 @@ export const AuthProvider = ({ children }) => {
           errorMessage = 'Invalid email or password';
         } else if (err.response.status === 403) {
           errorMessage = 'Your account is not active';
-        } else if (err.response.status === 422) {
-          errorMessage = 'Validation error. Please check your input.';
         }
       } else if (err.request) {
         errorMessage = 'No response from server. Please check your connection.';
-        console.log('Error request:', err.request);
-      } else {
-        errorMessage = err.message;
       }
       
       setError(errorMessage);
@@ -149,7 +154,6 @@ export const AuthProvider = ({ children }) => {
     setError(null);
     try {
       const response = await authAPI.register(userData);
-      console.log('Register response:', response.data);
       
       if (response.data && response.data.success === true) {
         const { user, access_token } = response.data;
@@ -157,7 +161,6 @@ export const AuthProvider = ({ children }) => {
         localStorage.setItem('access_token', access_token);
         localStorage.setItem('user', JSON.stringify(user));
         
-        // Extract permissions and roles
         const userPermissions = extractPermissions(user);
         const userRoles = extractRoles(user);
         
@@ -197,57 +200,34 @@ export const AuthProvider = ({ children }) => {
     history.push('/');
   };
 
-  // Helper function to check if user has a specific permission
   const hasPermission = (permission) => {
     if (!permission) return true;
-    
-    // Super-admin has all permissions
-    if (roles.includes('super-admin')) {
-      return true;
-    }
-    
-    const hasIt = permissions.includes(permission);
-    console.log(`Checking permission "${permission}": ${hasIt ? 'GRANTED' : 'DENIED'}`, permissions);
-    return hasIt;
+    if (roles.includes('super-admin')) return true;
+    return permissions.includes(permission);
   };
 
-  // Helper function to check if user has any of the given permissions
   const hasAnyPermission = (permissionList) => {
     if (!permissionList || permissionList.length === 0) return true;
-    
-    // Super-admin has all permissions
-    if (roles.includes('super-admin')) {
-      return true;
-    }
-    
+    if (roles.includes('super-admin')) return true;
     return permissionList.some(permission => permissions.includes(permission));
   };
 
-  // Helper function to check if user has all of the given permissions
   const hasAllPermissions = (permissionList) => {
     if (!permissionList || permissionList.length === 0) return true;
-    
-    // Super-admin has all permissions
-    if (roles.includes('super-admin')) {
-      return true;
-    }
-    
+    if (roles.includes('super-admin')) return true;
     return permissionList.every(permission => permissions.includes(permission));
   };
 
-  // Helper function to check if user has a specific role
   const hasRole = (role) => {
     if (!role) return true;
     return roles.includes(role);
   };
 
-  // Helper function to check if user has any of the given roles
   const hasAnyRole = (roleList) => {
     if (!roleList || roleList.length === 0) return true;
     return roleList.some(role => roles.includes(role));
   };
 
-  // Helper function to refresh user permissions (call after permission updates)
   const refreshPermissions = async () => {
     try {
       const response = await api.get('/user/permissions');
@@ -259,23 +239,25 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Get all permissions including those from roles
   const getAllPermissions = () => {
     return permissions;
   };
-const updateUser = (updatedUser) => {
-  setUser(updatedUser);
-  localStorage.setItem('user', JSON.stringify(updatedUser));
+  
+  const updateUser = (updatedUser) => {
+    setUser(updatedUser);
+    localStorage.setItem('user', JSON.stringify(updatedUser));
+    
+    const userPermissions = extractPermissions(updatedUser);
+    const userRoles = extractRoles(updatedUser);
+    
+    setPermissions(userPermissions);
+    setRoles(userRoles);
+  };
 
-  const userPermissions = extractPermissions(updatedUser);
-  const userRoles = extractRoles(updatedUser);
-
-  setPermissions(userPermissions);
-  setRoles(userRoles);
-};
   const value = {
     user,
     loading,
+    initialLoading, // Add this to the value
     error,
     updateUser,
     login,
@@ -294,6 +276,7 @@ const updateUser = (updatedUser) => {
     isSuperAdmin: roles.includes('super-admin'),
     isAdmin: roles.includes('admin'),
     isAffiliate: roles.includes('affiliate'),
+    fetchUserProfile, // Add this for manual refresh
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
