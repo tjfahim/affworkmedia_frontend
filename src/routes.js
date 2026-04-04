@@ -28,7 +28,10 @@ export const Routes = {
      Affiliate: {
         MyPayments: { path: "/affiliate/my-payments" },
         PaymentView: { path: "/affiliate/my-payments/:id" },
-        MyAccounts: { path: "/affiliate/my-accounts" }
+        MyAccounts: { path: "/affiliate/my-accounts" },
+        AffiliateGames: { path: "/affiliate/games" },
+        Offers: { path: "/affiliate/offers" },
+        OfferDetails: { path: "/affiliate/offers/:gameId/events" },
     },
 
     // docs

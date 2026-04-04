@@ -21,8 +21,12 @@ import AffiliateManagement from './admin/AffiliateManagement';
 import MakePayment from './admin/MakePayment';
 import PaymentHistory from './admin/PaymentHistory';
 
+
+
 import AffiliatePaymentHistory from './affiliate/AffiliatePaymentHistory';
 import MyAccounts from './affiliate/MyAccounts';
+import Offers from './affiliate/AffiliateOffers';
+import OfferDetails from './affiliate/AffiliateEventDetails';
 
 // components
 import Preloader from "../components/Preloader";
@@ -91,6 +95,8 @@ export default () => {
       <ProtectedRoute exact path={Routes.Admin.PaymentHistory.path} component={PaymentHistory} requiredRole="super-admin" />
       <ProtectedRoute exact path={Routes.Affiliate.MyPayments.path} component={AffiliatePaymentHistory} requiredRole="affiliate" />
       <ProtectedRoute exact path={Routes.Affiliate.MyAccounts.path} component={MyAccounts} requiredRole="affiliate" />
+      <ProtectedRoute exact path={Routes.Affiliate.Offers.path} component={Offers} requiredRole="affiliate" />
+      <ProtectedRoute exact path={Routes.Affiliate.OfferDetails.path} component={OfferDetails} requiredRole="affiliate" />
 
       <Redirect to={Routes.NotFound.path} />
     </Switch>

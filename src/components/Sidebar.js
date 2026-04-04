@@ -113,6 +113,12 @@ export default (props = {}) => {
 
               {hasRole('affiliate') && (
                     <>
+                    
+                      <NavItem 
+                          title="Affiliate Offers" 
+                          link="/affiliate/offers" 
+                          icon={faHandHoldingUsd}
+                      />
                         <NavItem
                             title="My Payments"
                             link={Routes.Affiliate.MyPayments.path}
@@ -123,6 +129,7 @@ export default (props = {}) => {
                             link={Routes.Affiliate.MyAccounts.path}
                             icon={faUserCog}
                         />
+
                     </>
                 )}
             </Nav>
